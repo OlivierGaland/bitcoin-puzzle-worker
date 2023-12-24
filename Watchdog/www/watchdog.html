@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/www/style.css">
+        <title>Bitcoin Puzzle Pools</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    </head>
+    <body>
+
+        <table id="main">
+            <colgroup>
+                <col span="1" style="width: 20%;">
+                <col span="1" style="width: 80%;">
+            </colgroup>
+            <tr class="background">
+                <td class="background top">
+
+                    <table id="menu_header">
+                        <tr class="background">
+                            <td class="background">
+                                <img src="/www/logo.png" />
+                            </td>
+                        </tr>
+                    </table>
+
+                    <br>
+
+                    <table id="menu_buttons">
+                        <tr class="background">
+                            <td class="background"><button class="show" id="pool_howto" onclick="switch_howto()">How to</button></td>
+                        </tr>
+                        <tr class="background">
+                            <td class="background"><button class="show" id="pool_stats" onclick="switch_pool_stats()">Pool stats</button></td>
+                        </tr>
+                        <tr class="background">
+                            <td class="background"><button class="show" id="worker_stats" onclick="switch_worker_stats()">Worker stats</button></td>
+                        </tr>
+                    </table>
+
+                    <br><br>
+
+                    <table id="howto_buttons">
+                        <tr class="background">
+                            <td class="background"><button class="show" id="howto_btn_intro" onclick="switch_submenu('howto','intro')">Introduction</button></td>
+                        </tr>
+                        <tr class="background">
+                            <td class="background"><button class="show" id="howto_btn_puzzle" onclick="switch_submenu('howto','puzzle')">Puzzle challenge</button></td>
+                        </tr>
+                        <tr class="background">
+                            <td class="background"><button class="show" id="howto_btn_install_worker" onclick="switch_submenu('howto','install_worker')">Install worker</button></td>
+                        </tr>        
+                    </table>
+
+                    <table id="monitor_worker_buttons">
+                        <tr class="background">
+                            <td class="background"><button class="show" id="show_containers" onclick="switch_containers()">Hide Containers</button></td>
+                        </tr>
+                        <tr class="background">
+                            <td class="background"><button class="show" id="show_gpus" onclick="switch_gpus()">Hide Gpus</button></td>
+                        </tr>
+                        <tr class="background">
+                            <td class="background"><button class="show" id="show_logs" onclick="switch_logs()">Hide Logs</button></td>
+                        </tr>        
+                    </table>
+
+                    <table id="monitor_pool_buttons">
+                        <tr class="background">
+                            <td class="background"><button class="show" id="show_pools" onclick="switch_pools()">Hide Pools</button></td>
+                        </tr>
+                        <tr class="background">
+                            <td class="background"><button class="show" id="show_leaderboard" onclick="switch_leaderboard()">Hide Leaderboard</button></td>
+                        </tr>
+                        <tr class="background">
+                            <td class="background"><button class="show" id="show_your_stats" onclick="switch_your_stats()">Hide Stats</button></td>
+                        </tr>
+                    </table>
+
+                </td>
+
+                <td class="background top" id="howto">
+                    <table>
+                        <tr class="background" id="howto_dest_intro">
+                            <td class="background">
+                                INTRO
+                            </td>
+                        </tr>
+                        <tr class="background" id="howto_dest_puzzle">
+                            <td class="background">
+                                PUZZLE
+                            </td>
+                        </tr>
+                        <tr class="background" id="howto_dest_install_worker">
+                            <td class="background">
+                                INSTALL
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+
+                <td class="background top" id="monitor_worker">
+                    <table>
+                        <tr class="background">
+                            <td class="background top">
+                                <div id="containers"></div>
+                            </td>
+                        </tr>
+                        <tr class="background">
+                            <td class="background top">
+                                <div id="gpus"></div>
+                            </td>
+                        </tr>
+                        <tr class="background">
+                            <td class="background top">
+                                <div id="logs"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+
+                <td class="background top" id="monitor_pool">
+                    <table>
+                        <tr class="background">
+                            <td class="background">
+                                <div id="pools"></div>
+                            </td>
+                        </tr>
+                        <tr class="background">
+                            <td class="background">
+                                <div id="leaderboard"></div>
+                            </td>
+                        </tr>
+                        <tr class="background">
+                            <td class="background">
+                                <div id="your_stats"></div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+
+            </tr>
+        </table>
+
+
+<!--        <div id="kitty"></div>  -->
+
+
+
+    </body>
+
+    <script>
+
+        function switch_pools() {
+            if ($('#pools:visible').length == 0) {
+                $('#pools').show()
+                $('#show_pools').text("Hide Pools")
+            }
+            else {
+                $('#pools').hide()                
+                $('#show_pools').text("Show Pools")
+            }
+        }
+
+        function switch_leaderboard() {
+            if ($('#leaderboard:visible').length == 0) {
+                $('#leaderboard').show()
+                $('#show_leaderboard').text("Hide Leaderboard")
+            }
+            else {
+                $('#leaderboard').hide()                
+                $('#show_leaderboard').text("Show Leaderboard")
+            }
+        }
+
+        function switch_your_stats() {
+            if ($('#your_stats:visible').length == 0) {
+                $('#your_stats').show()
+                $('#show_your_stats').text("Hide Stats")
+            }
+            else {
+                $('#your_stats').hide()                
+                $('#show_your_stats').text("Show Stats")
+            }
+        }
+
+        function refresh_pools() {
+            /*
+            $.ajax({
+                url: "pools",
+                cache: false,
+                success: function(html) { $("#pools").html(html); }
+           });
+           */
+           $("#pools").html("POOL0")
+        }
+
+
+        function refresh_leaderboard() {
+            /*
+            $.ajax({
+                url: "leaderboard",
+                cache: false,
+                success: function(html) { $("#leaderboard").html(html); }
+           });
+           */
+           $("#leaderboard").html("POOL1")
+        }
+
+        function refresh_your_stats() {
+            /*
+            $.ajax({
+                url: "your_stats",
+                cache: false,
+                success: function(html) { $("#your_stats").html(html); }
+           });
+           */
+           $("#your_stats").html("POOL2")
+        }
+
+
+
+        function switch_logs() {
+            if ($('#logs:visible').length == 0) {
+                $('#logs').show()
+                $('#show_logs').text("Hide Logs")
+            }
+            else {
+                $('#logs').hide()                
+                $('#show_logs').text("Show Logs")
+            }
+        }
+
+        function switch_gpus() {
+            if ($('#gpus:visible').length == 0) {
+                $('#gpus').show()
+                $('#show_gpus').text("Hide Gpus")
+            }
+            else {
+                $('#gpus').hide()                
+                $('#show_gpus').text("Show Gpus")
+            }
+        }
+
+        function switch_containers() {
+            if ($('#containers:visible').length == 0) {
+                $('#containers').show()
+                $('#show_containers').text("Hide Containers")
+            }
+            else {
+                $('#containers').hide()                
+                $('#show_containers').text("Show Containers")
+            }
+        }
+
+        function refresh_gpus() {
+            $.ajax({
+                url: "gpus",
+                cache: false,
+                success: function(html) { $("#gpus").html(html+'<br>'); }
+           });
+        }
+
+
+        function refresh_containers() {
+            $.ajax({
+                url: "containers",
+                cache: false,
+                success: function(html) { $("#containers").html(html+'<br>'); }
+           });
+        }
+
+        function refresh_logs() {
+            $.ajax({
+                url: "logs",
+                cache: false,
+                success: function(html) { $("#logs").html(html+'<br>'); }
+           });
+        }
+
+        
+        /*
+        function refresh_kitty() {
+            $.ajax({
+                url: "img",
+                cache: false,
+                success: function(html) { $("#kitty").html(html); }
+           });
+        }
+        */
+
+        function menu_btn_set(text_start,menu_selected) {
+            $('[id^='+text_start+'_]').css('background-color','SkyBlue');       
+            $('#'+text_start+'_'+menu_selected).css('background-color','DodgerBlue');
+        }
+
+        function menu_dest_set(text_start,menu_selected) {
+            $('[id^='+text_start+'_]').hide();    
+            $('#'+text_start+'_'+menu_selected).show();
+        }
+
+        function switch_submenu(menu,submenu) {
+            menu_btn_set(menu+'_btn',submenu);
+            menu_dest_set(menu+'_dest',submenu);
+        }
+
+        function switch_howto(init = false) {
+            $('#howto_buttons').show()
+            $('#monitor_worker_buttons').hide()
+            $('#monitor_pool_buttons').hide()  
+
+            $('#pool_howto').css('background-color','DodgerBlue')
+            $('#pool_stats').css('background-color','SkyBlue')
+            $('#worker_stats').css('background-color','SkyBlue')
+
+            $('#howto').show()  
+            $('#monitor_worker').hide()
+            $('#monitor_pool').hide()  
+
+            if (init == true) { switch_submenu('howto','intro') }
+        }
+
+        function switch_pool_stats() {
+            $('#howto_buttons').hide()
+            $('#monitor_worker_buttons').hide()
+            $('#monitor_pool_buttons').show()  
+
+            $('#pool_howto').css('background-color','SkyBlue')
+            $('#pool_stats').css('background-color','DodgerBlue')
+            $('#worker_stats').css('background-color','SkyBlue')
+
+            $('#howto').hide()  
+            $('#monitor_worker').hide()
+            $('#monitor_pool').show()  
+        }
+
+        function switch_worker_stats() {
+            $('#howto_buttons').hide()
+            $('#monitor_pool_buttons').hide()
+            $('#monitor_worker_buttons').show()  
+
+            $('#pool_howto').css('background-color','SkyBlue')
+            $('#pool_stats').css('background-color','SkyBlue')
+            $('#worker_stats').css('background-color','DodgerBlue')
+
+            $('#howto').hide()  
+            $('#monitor_pool').hide()
+            $('#monitor_worker').show()  
+        }
+
+        setInterval(refresh_gpus, 10000);
+        setInterval(refresh_containers, 30000);
+        setInterval(refresh_logs, 60000);
+
+        setInterval(refresh_pools, 600000);
+        setInterval(refresh_leaderboard, 600000);
+        setInterval(refresh_your_stats, 600000);
+
+        refresh_gpus();
+        refresh_containers();
+        refresh_logs();
+        refresh_pools();
+        refresh_leaderboard();
+        refresh_your_stats();
+        //setInterval(refresh_kitty, 10000);
+
+        switch_howto(true);
+
+        /*
+        function refresh() {
+            window.location.reload();
+        }
+        setInterval(refresh, 1000);
+        */
+
+    </script>
+</html>

@@ -1,0 +1,79 @@
+/* https://www.w3schools.com/colors/colors_groups.asp
+
+PowderBlue        => background
+Navy              => text
+DarkBlue          => text
+
+LightSkyBlue (tr) SkyBlue / CadetBlue (td)  => rows
+LightSeaGreen / DarkSeaGreen => rows/buttons hover
+
+*/
+
+body { background-color: PowderBlue; }
+  
+h1 {
+    color: Navy;
+    margin-left: 20px;
+    text-align: center;
+}
+
+table {
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+  border-spacing: 0px;
+}
+
+table.bordered {
+  background-color: LightSkyBlue;
+  width: 95%;
+  border: 2px solid;
+}
+
+td,th {
+  border-right: solid 1px; 
+  border-left: solid 1px;  
+  font-size: 18px;
+  padding: 3px;
+  text-align: center;
+  color: DarkBlue;
+  vertical-align: middle;
+}
+
+tr { background: skyblue; }
+tr.highlight { background: CadetBlue; }
+
+tr:hover { background: LightSeaGreen ; }
+tr.highlight:hover { background: DarkSeaGreen ; }
+
+tr.background { background-color: PowderBlue; }
+tr.header { background-color: LightSkyBlue; }
+
+th {
+  font-size: 20px;
+  padding: 6px;
+  border-bottom: 1px solid;
+  color: Navy;
+}
+
+td.background {
+  border-right: 0px; 
+  border-left: 0px;  
+}
+
+td.top {
+  vertical-align: top;
+}
+
+button {
+  width: 90%;
+  padding: 10px;
+  font-size: 24px;
+  border-radius: 6px;
+  color: Navy;
+  background-color: LightSkyBlue;
+}
+
+button:hover {
+  background-color: LightSeaGreen;
+}

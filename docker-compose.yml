@@ -1,0 +1,32 @@
+version: '3.5'
+
+services:
+
+  watchdog:
+    build:
+      context: ./Watchdog
+    working_dir: /app
+    restart: always
+    privileged: true
+    tty: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "80:80"                                           # change port to access web UI if needed
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            capabilities: [gpu]     
+    networks:
+      default:
+        ipv4_address: 172.16.173.10
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.173.0/24

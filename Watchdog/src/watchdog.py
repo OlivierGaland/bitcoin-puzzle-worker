@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-import time,subprocess
+import time,subprocess,os
 import threading
 
 import base64
@@ -98,11 +98,17 @@ if __name__ == '__main__':
     LOG.start()
     LOG.info("Starting ...")
 
+    gpu_count = os.getenv("WORKER_GPU_COUNT")
+    if gpu_count is None: raise Exception("env WORKER_GPU_COUNT is not set")
+    gpu_count = int(gpu_count)
 
     try:
+
+        LOG.info("GPU count : "+str(gpu_count))
+
         webserver_thread = None
-        Context.gpu_factory = GpuFactory(6)
-        Context.container_factory = ContainerFactory(6)
+        Context.gpu_factory = GpuFactory(gpu_count)
+        Context.container_factory = ContainerFactory(gpu_count)
 
         #exit(-1)
 

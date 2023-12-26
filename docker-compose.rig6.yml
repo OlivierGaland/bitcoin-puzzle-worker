@@ -1,0 +1,104 @@
+version: '3.5'
+
+services:
+
+  watchdog:
+    build:
+      context: ./Watchdog
+    privileged: true
+    tty: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - "${WATCHDOG_EXPOSED_PORT}:80"     
+    environment:
+      - WORKER_GPU_COUNT=${WORKER_GPU_COUNT}
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            capabilities: [gpu]     
+
+  bitcrack-client-00:
+    image: ogaland/bitcoin-puzzle-bitcrack:cc_86
+    env_file:
+      - .env.gpu.00
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['0']                # card number to use by this container (1 card allowed, add more workers if you have several cards)
+            capabilities: [gpu]    
+
+  bitcrack-client-01:
+    image: ogaland/bitcoin-puzzle-bitcrack:cc_86
+    env_file:
+      - .env.gpu.01
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['1']                # card number to use by this container (1 card allowed, add more workers if you have several cards)
+            capabilities: [gpu]   
+
+  bitcrack-client-02:
+    image: ogaland/bitcoin-puzzle-bitcrack:cc_86
+    env_file:
+      - .env.gpu.02
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['2']                # card number to use by this container (1 card allowed, add more workers if you have several cards)
+            capabilities: [gpu]   
+
+  bitcrack-client-03:
+    image: ogaland/bitcoin-puzzle-bitcrack:cc_86
+    env_file:
+      - .env.gpu.03
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['3']                # card number to use by this container (1 card allowed, add more workers if you have several cards)
+            capabilities: [gpu]   
+
+  bitcrack-client-04:
+    image: ogaland/bitcoin-puzzle-bitcrack:cc_86
+    env_file:
+      - .env.gpu.04
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['4']                # card number to use by this container (1 card allowed, add more workers if you have several cards)
+            capabilities: [gpu]                                       
+
+
+  bitcrack-client-05:
+    image: ogaland/bitcoin-puzzle-bitcrack:cc_86
+    env_file:
+      - .env.gpu.05
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['5']                # card number to use by this container (1 card allowed, add more workers if you have several cards)
+            capabilities: [gpu]   
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.173.0/24
+
+

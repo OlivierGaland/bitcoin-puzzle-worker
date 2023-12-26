@@ -5,23 +5,33 @@ services:
   watchdog:
     build:
       context: ./Watchdog
-    working_dir: /app
-    restart: always
     privileged: true
     tty: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - "80:80"                                           # change port to access web UI if needed
+      - "${WATCHDOG_EXPOSED_PORT}:80"     
+    environment:
+      - WORKER_GPU_COUNT=${WORKER_GPU_COUNT}
     deploy:
       resources:
         reservations:
           devices:
           - driver: nvidia
             capabilities: [gpu]     
-    networks:
-      default:
-        ipv4_address: 172.16.173.10
+
+  bitcrack-client-00:
+    image: ogaland/bitcoin-puzzle-bitcrack:cc_86
+    #image: bitcoin-puzzle-bitcrack:cc_86
+    env_file:
+      - .env.gpu.00
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['0']                # card number to use by this container (1 card allowed, add more workers if you have several cards)
+            capabilities: [gpu]    
 
 networks:
   default:
@@ -30,3 +40,5 @@ networks:
       driver: default
       config:
         - subnet: 172.16.173.0/24
+
+

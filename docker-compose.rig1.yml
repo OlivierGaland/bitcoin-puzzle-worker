@@ -5,6 +5,8 @@ services:
   watchdog:
     build:
       context: ./Watchdog
+    depends_on:
+      - bitcrack-client-00
     env_file:
       - .env.watchdog.rig1
     privileged: true
@@ -13,6 +15,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "${WATCHDOG_EXPOSED_PORT}:80"     
+    restart: always
     deploy:
       resources:
         reservations:

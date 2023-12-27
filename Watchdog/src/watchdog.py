@@ -97,6 +97,7 @@ def WebserverThread():
 if __name__ == '__main__':
     LOG.start()
     LOG.info("Starting ...")
+    time.sleep(15)  # timer for workers containers to be up
 
     #os.environ["WORKER_GPU_COUNT"] = "6"
     #os.environ["GPU_MEM_CLOCK_00"] = "1200"

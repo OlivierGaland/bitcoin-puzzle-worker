@@ -98,9 +98,23 @@ if __name__ == '__main__':
     LOG.start()
     LOG.info("Starting ...")
 
+    #os.environ["WORKER_GPU_COUNT"] = "6"
+    #os.environ["GPU_MEM_CLOCK_00"] = "1200"
+    #os.environ["GPU_MEM_CLOCK_01"] = "1300"  
+    #os.environ["GPU_POWER_LIMIT_00"] = "100"
+
+    # set overclocking parameters
     gpu_count = os.getenv("WORKER_GPU_COUNT")
     if gpu_count is None: raise Exception("env WORKER_GPU_COUNT is not set")
     gpu_count = int(gpu_count)
+    os.system("nvidia-smi -pm 1")
+    for gpu in range(gpu_count):
+        mem_clock = os.getenv("GPU_MEM_CLOCK_"+"{:02d}".format(gpu))
+        power_limit = os.getenv("GPU_POWER_LIMIT_"+"{:02d}".format(gpu))    
+        if mem_clock is not None:
+            os.system("nvidia-smi -i "+str(gpu)+" -lmc="+str(mem_clock))
+        if power_limit is not None:
+            os.system("nvidia-smi -i "+str(gpu)+" -pl "+str(power_limit))
 
     try:
 

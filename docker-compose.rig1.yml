@@ -5,14 +5,14 @@ services:
   watchdog:
     build:
       context: ./Watchdog
+    env_file:
+      - .env.watchdog.rig1
     privileged: true
     tty: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
       - "${WATCHDOG_EXPOSED_PORT}:80"     
-    environment:
-      - WORKER_GPU_COUNT=${WORKER_GPU_COUNT}
     deploy:
       resources:
         reservations:
@@ -21,9 +21,8 @@ services:
             capabilities: [gpu]     
 
   bitcrack-client-00:
-    #image: ogaland/bitcoin-puzzle-bitcrack:cc_86
-    image: bitcoin-puzzle-bitcrack:cc_86
-    privileged: true
+    #image: ogaland/bitcoin-puzzle-bitcrack:cc86
+    image: bitcoin-puzzle-bitcrack:cc86
     env_file:
       - .env.gpu.00
     deploy:

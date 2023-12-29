@@ -84,16 +84,18 @@ class ContainerFactory():
         if self.refresh_thread != None: self.refresh_thread.join()
 
     def to_html(self):
-        ret = "<table id='containers' class='bordered'><tr class='header'><th>Container</th><th>Gpu</th><th>Name</th><th>Id</th><th>Status</th><th>State</th><th>Restart</th><th>Pool</th><th>Worker</th><th></th></tr>"
+        ret = "<table id='containers_tab' class='bordered'><tr class='header'><th>Container</th><th>Gpu</th><th>Name</th><th>Id</th><th>Status</th><th>State</th><th>Restart</th><th>Pool</th><th>Worker</th><th></th></tr>"
         for i in range(self.count): ret += self.containers[i].to_html(i)
         return ret+ "</table>"
     
     def logs_to_html(self):
-        ret = "<table id='logs' class='bordered'><tr class='header'><th>Container</th><th>Date</th><th>Block duration</th><th>Scan speed</th></tr>"
+        ret = "<table id='logs_tab' class='bordered'><tr class='header'><th>Container</th><th>Date</th><th>Block duration</th><th>Scan speed</th></tr>"
         logs = list()
 
+        nline = int(36/self.count)
+
         for i in range(self.count):
-            for item in get_command_output("docker logs "+str(self.containers[i].name)+" | grep 'Scan done' | tail -5",[]):
+            for item in get_command_output("docker logs "+str(self.containers[i].name)+" | grep 'Scan done' | tail -"+str(nline),[]):
                 logs.append((i,item.split("INFO")[0].split(".")[0],item.split("elapsed time")[1].split(" speed is ")[0].split(".")[0],item.split("elapsed time")[1].split(" speed is ")[1]))
 
         slogs = sorted(logs, key=lambda d: d[1], reverse=True)

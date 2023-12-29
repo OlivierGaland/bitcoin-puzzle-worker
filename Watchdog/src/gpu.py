@@ -69,7 +69,7 @@ class GpuFactory():
 
 
     def to_html(self):
-        ret = "<table id='gpus' class='bordered'><tr class='header'><th>Gpu</th><th>Name</th><th>Memory</th><th>Mem load</th><th>Gpu load</th><th>Temp</th><th>Fan speed</th><th>Mem clock</th><th>Gpu clock</th><th>Pwr limit</th><th>Pwr usage</th><th></th></tr>"
+        ret = "<table id='gpus_tab' class='bordered'><tr class='header'><th>Gpu</th><th>Name</th><th>Memory</th><th>Mem load</th><th>Gpu load</th><th>Temp</th><th>Fan speed</th><th>Mem clock</th><th>Gpu clock</th><th>Pwr limit</th><th>Pwr usage</th><th></th></tr>"
         for i in range(self.count): ret += self.gpus[i].to_html(i,self.gpus[i].state)
         return ret+ "</table>"
 

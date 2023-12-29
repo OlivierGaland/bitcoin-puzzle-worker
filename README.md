@@ -30,3 +30,5 @@ The software is currently still under developpement and may be improved, so it i
 
 Currently on dev, manual will be available soon
 
+![image](https://github.com/OlivierGaland/bitcoin-puzzle-worker/assets/26048157/eef50be8-d7a4-4de4-a5d7-c040221404f0)
+![image](https://github.com/OlivierGaland/bitcoin-puzzle-worker/assets/26048157/52790a41-5b31-42ad-8039-e9b39797fded)

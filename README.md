@@ -142,6 +142,7 @@ Currently only Nvidia cards are supported, I will think about adding AMD cards s
 
     You can then check Portainer at http://localhost:9000 to see if all containers have been started successfully  
 
+![image](https://github.com/OlivierGaland/bitcoin-puzzle-worker/assets/26048157/98eb84f0-7978-4caf-8f3f-1b27caca04db)
 
     Then you can access to watchdog UI at http://localhost to monitor your workers state  
 

@@ -112,19 +112,40 @@ Currently only Nvidia cards are supported, I will think about adding AMD cards s
         - WORKER_START_DELAY : this will set a waiting time (in sec) before the client start, during my testing it seems if all clients are started in sync, nvidia drivers does not appreciate and may crash some containers, to prevent that use a different WORKER_START_DELAY for each .env.gpu file, a delay of 10 sec between each delay seems enough.
         - POOL_NAME : The pool name to work in.
         - WORKER_NAME : This should be a bitcoin address and will be checked on server side, note only legacies addresses are accepted (starting with 1 or 3). Be aware that it will be the proof that you had processed assigned range. Once the target key is broken, the rewards will be sent to this address. So be sure to not lose access to this wallet in any case.
-        - SERVER_IP : should be set to  -------
-        - SERVER_PORT : should be set to  -------
+        - SERVER_IP : should be set to  puzzle.hyenasoft.com
+        - SERVER_PORT : should be set to  6602
     - Video card settings :
-        TODO
+        - For detailed infos on those settings please see the Understanding video card settings section.
+        - GPU_BRAND : Set to Nvidia , currently only Nvidia card are supported.
+        - GPU_NAME : Your card model, for example RTX3060Ti, it will allow to retrieve best settings from database.
+        - GPU_MEM_CLOCK : Optional, unsupported on Windows host : set the memory clock manually.
+        - GPU_POWER_LIMIT : Optional, unsupported on Windows host : set the max power usage manually.
+        - BIT_OVERRIDE : Optional, customized block size, 38 is the minimal value, you can go higher especially if your card is powerfull (single scan processed in less than 10 minutes, that cause initialization duration to impact performance).
+        - BLOCKS_OVERRIDE : Optional, set scanner CUDA blocks (if not set use database default for your GPU_NAME).
+        - THREADS_OVERRIDE : Optional, set scanner thread count per CUDA block (if not set use database default for your GPU_NAME).
+        - POINTS_OVERRIDE : Optional, set scanner processed points count (if not set use database default for your GPU_NAME).
     - Filter settings :
-        TODO
-
-
+        - This section is optional and allow to discard blocks not matching a decent entropy. Aim is to try to select only range that are statistically more likely to be the solution of the puzzle with the hope of finding the solution faster. To disable all filters just remove the section. 
+        - FILTER_BASE_DISPLAY : set to 1 to enable filtering on base display : this will discard range repeating to many times same char like for instance 0xAAAAA789 in base16 -too many repeated A-.
+        - FILTER_BASE_DISPLAY_MIN : minimal base to check in the filter (from base2 to base36), value from 2 to 36.
+        - FILTER_BASE_DISPLAY_MAX : maximum base to check in the filter (from base2 to base36), value from 2 to 36.
+        - FILTER_BIT_BALANCE : set to 1 to enable filtering on bit value count, server will check balance with 0 and 1 bit in the generated random range.
+        - FILTER_BIT_BALANCE_PERCENT : max allowed balance between 0 and 1 bit in percent, from 0.0 to 1.0. For instance 0.2 means that bits with same value must be from 30% (0.5-0.2) to 70% (0.5+0.2) of total bits. 
+        - FILTER_PATTERN : set to 1 to enable pattern filtering. To add new patterns to filter, just add one or more FILTER_PATTERN_xxx variable (where xxx of your choice)
+        - FILTER_PATTERN_xxx : a pattern definition, separated comma triplets : binary string to check , min allowed percentage , max allowed percentage. For instance FILTER_PATTERN_000=010,0.03,0.15 means the random range in binary display will check 010 sequence and there must be at least 3% of range containing this pattern, but no more than 15% of the range.
 
 5. Starting the stack :  
-        ```bash 
-        sudo docker-compose up -d
-        ```       
+    On Windows powershell (without sudo) or Linux bash type :  
+    ```bash 
+    sudo docker-compose up -d
+    ```    
+
+    You can then check Portainer at http://localhost:9000 to see if all containers have been started successfully  
+
+
+    Then you can access to watchdog UI at http://localhost to monitor your workers state  
+
+
 
 
 

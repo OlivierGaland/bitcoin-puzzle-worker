@@ -1,3 +1,6 @@
+# Important notice
+This software is still under developpement and not yet fully functionnal, it should be usable in the comings weeks. Please come back to see when I will deploy it to users.
+
 # bitcoin-puzzle-worker
 Client side of bitcoin puzzle challenge :  
 This software will allow you to participate in Bitcoin Puzzle Challenge by scanning random ranges and sending results to the pool server, once a challenge is completed the reward will be shared regarding the ranges count of all participants and distributed.
@@ -112,8 +115,8 @@ Currently only Nvidia cards are supported, I will think about adding AMD cards s
         - WORKER_START_DELAY : this will set a waiting time (in sec) before the client start, during my testing it seems if all clients are started in sync, nvidia drivers does not appreciate and may crash some containers, to prevent that use a different WORKER_START_DELAY for each .env.gpu file, a delay of 10 sec between each delay seems enough.
         - POOL_NAME : The pool name to work in.
         - WORKER_NAME : This should be a bitcoin address and will be checked on server side, note only legacies addresses are accepted (starting with 1 or 3). Be aware that it will be the proof that you had processed assigned range. Once the target key is broken, the rewards will be sent to this address. So be sure to not lose access to this wallet in any case.
-        - SERVER_IP : should be set to  puzzle.hyenasoft.com
-        - SERVER_PORT : should be set to  6602
+        - SERVER_IP : should be set to puzzle.hyenasoft.com
+        - SERVER_PORT : should be set to 6603
     - Video card settings :
         - For detailed infos on those settings please see the Understanding video card settings section.
         - GPU_BRAND : Set to Nvidia , currently only Nvidia card are supported.

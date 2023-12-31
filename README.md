@@ -1,3 +1,6 @@
+# Important notice
+This software is still under developpement and not yet fully functionnal, it should be usable in the comings weeks. Please come back to see when I will deploy it to users.
+
 # bitcoin-puzzle-worker
 Client side of bitcoin puzzle challenge :  
 This software will allow you to participate in Bitcoin Puzzle Challenge by scanning random ranges and sending results to the pool server, once a challenge is completed the reward will be shared regarding the ranges count of all participants and distributed.

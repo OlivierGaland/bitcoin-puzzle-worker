@@ -113,7 +113,7 @@ Currently only Nvidia cards are supported, I will think about adding AMD cards s
         - POOL_NAME : The pool name to work in.
         - WORKER_NAME : This should be a bitcoin address and will be checked on server side, note only legacies addresses are accepted (starting with 1 or 3). Be aware that it will be the proof that you had processed assigned range. Once the target key is broken, the rewards will be sent to this address. So be sure to not lose access to this wallet in any case.
         - SERVER_IP : should be set to  puzzle.hyenasoft.com
-        - SERVER_PORT : should be set to  6602
+        - SERVER_PORT : should be set to  6603
     - Video card settings :
         - For detailed infos on those settings please see the Understanding video card settings section.
         - GPU_BRAND : Set to Nvidia , currently only Nvidia card are supported.

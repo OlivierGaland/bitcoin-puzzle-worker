@@ -27,29 +27,17 @@
 
                     <table id="menu_buttons">
                         <tr class="background">
-                            <td class="background"><button class="show" id="pool_howto" onclick="switch_howto()">How to</button></td>
-                        </tr>
-                        <tr class="background">
                             <td class="background"><button class="show" id="pools_stats" onclick="switch_pools_stats()">Pools stats</button></td>
                         </tr>
                         <tr class="background">
                             <td class="background"><button class="show" id="worker_stats" onclick="switch_worker_stats()">Worker stats</button></td>
                         </tr>
+                        <tr class="background">
+                            <td class="background"><button class="show" id="Miscellaneous" onclick="switch_miscellaneous()">Miscellaneous</button></td>
+                        </tr>
                     </table>
 
                     <br><br>
-
-                    <table id="howto_buttons">
-                        <tr class="background">
-                            <td class="background"><button class="show" id="howto_btn_intro" onclick="switch_submenu('howto','intro')">Introduction</button></td>
-                        </tr>
-                        <tr class="background">
-                            <td class="background"><button class="show" id="howto_btn_puzzle" onclick="switch_submenu('howto','puzzle')">Puzzle challenge</button></td>
-                        </tr>
-                        <tr class="background">
-                            <td class="background"><button class="show" id="howto_btn_install_worker" onclick="switch_submenu('howto','install_worker')">Install worker</button></td>
-                        </tr>        
-                    </table>
 
                     <table id="monitor_worker_buttons">
                         <tr class="background">
@@ -75,25 +63,46 @@
                         </tr>
                     </table>
 
+                    <table id="miscellaneous_buttons">
+                        <tr class="background">
+                            <td class="background"><button class="show" id="miscellaneous_btn_gpu_settings_list" onclick="switch_submenu('miscellaneous','gpu_settings_list')">GPU settings list</button></td>
+                        </tr>
+                        <!--
+                        <tr class="background">
+                            <td class="background"><button class="show" id="miscellaneous_btn_puzzle" onclick="switch_submenu('miscellaneous','puzzle')">Puzzle challenge</button></td>
+                        </tr>
+                        <tr class="background">
+                            <td class="background"><button class="show" id="miscellaneous_btn_install_worker" onclick="switch_submenu('miscellaneous','install_worker')">Install worker</button></td>
+                        </tr>        
+                        -->
+                </table>
+
+
                 </td>
 
-                <td class="background top" id="howto">
+                <td class="background top" id="miscellaneous">
                     <table>
-                        <tr class="background" id="howto_dest_intro">
-                            <td class="background">
-                                INTRO
+                        <tr class="background" id="miscellaneous_dest_gpu_settings_list">
+                            <td class="background top">
+                                <div id="gpu_settings"></div>
                             </td>
                         </tr>
-                        <tr class="background" id="howto_dest_puzzle">
-                            <td class="background">
+
+                        <!--
+
+                        <tr class="background" id="miscellaneous_dest_puzzle">
+                            <td class="background top">
                                 PUZZLE
                             </td>
                         </tr>
-                        <tr class="background" id="howto_dest_install_worker">
-                            <td class="background">
+                        <tr class="background" id="miscellaneous_dest_install_worker">
+                            <td class="background top">
                                 INSTALL
                             </td>
                         </tr>
+
+                        -->
+
                     </table>
                 </td>
 
@@ -217,7 +226,7 @@
         }
 
         function html_convert_leaderboard(json) {
-            var html = "<table id='leaderboard_tab' class='bordered'>";
+            var html = "<table id='pool_def_tab' class='bordered'>";
 
             var name = json["name"]; 
             var block_count = json["block_count"];
@@ -335,6 +344,27 @@
            });
         }
 
+
+        function html_convert_gpu_settings(json) {
+            var html = "<table id='gpu_settings_tab' class='bordered'>";
+            html += "<tr class='header'><th>Brand</th><th>Model</th><th>Block size</th><th>CUDA : blocks / threads / points</th><th>Power saving : mem clk / pwr limit</th></tr>";
+
+            for (var i = 0; i < json.length; i++) {
+                html += "<tr><td>"+json[i]["brand"]+"</td><td>"+json[i]["model"]+"</td><td>"+json[i]["min_block_size"]+"-"+json[i]["max_block_size"]+"</td><td>"+json[i]["blocks"]+" / "+json[i]["threads"]+" / "+json[i]["points"]+"</td><td>"+json[i]["power_save_mem"]+" / "+json[i]["power_save_pl"]+"</td></tr>";
+            }
+
+            return html+"</table><br>";
+        } 
+
+        function refresh_gpu_settings_list() {
+            $.ajax({
+                url: SERVER_URL+"/req/gpu-settings-list.php",
+                dataType: 'json',
+                cache: false,
+                success: function(json) { $("#gpu_settings").html(html_convert_gpu_settings(json)); }
+            });
+        }
+
         
         /*
         function refresh_kitty() {
@@ -361,46 +391,44 @@
             menu_dest_set(menu+'_dest',submenu);
         }
 
-        function switch_howto(init = false) {
-            $('#howto_buttons').show()
+        function switch_miscellaneous() {
+            $('#miscellaneous_buttons').show()
             $('#monitor_worker_buttons').hide()
             $('#monitor_pool_buttons').hide()  
 
-            $('#pool_howto').css('background-color','DodgerBlue')
+            $('#Miscellaneous').css('background-color','DodgerBlue')
             $('#pools_stats').css('background-color','SkyBlue')
             $('#worker_stats').css('background-color','SkyBlue')
 
-            $('#howto').show()  
+            $('#miscellaneous').show()  
             $('#monitor_worker').hide()
             $('#monitor_pool').hide()  
-
-            if (init == true) { switch_submenu('howto','intro') }
         }
 
         function switch_pools_stats() {
-            $('#howto_buttons').hide()
+            $('#miscellaneous_buttons').hide()
             $('#monitor_worker_buttons').hide()
             $('#monitor_pool_buttons').show()  
 
-            $('#pool_howto').css('background-color','SkyBlue')
+            $('#Miscellaneous').css('background-color','SkyBlue')
             $('#pools_stats').css('background-color','DodgerBlue')
             $('#worker_stats').css('background-color','SkyBlue')
 
-            $('#howto').hide()  
+            $('#miscellaneous').hide()  
             $('#monitor_worker').hide()
             $('#monitor_pool').show()  
         }
 
         function switch_worker_stats() {
-            $('#howto_buttons').hide()
+            $('#miscellaneous_buttons').hide()
             $('#monitor_pool_buttons').hide()
             $('#monitor_worker_buttons').show()  
 
-            $('#pool_howto').css('background-color','SkyBlue')
+            $('#Miscellaneous').css('background-color','SkyBlue')
             $('#pools_stats').css('background-color','SkyBlue')
             $('#worker_stats').css('background-color','DodgerBlue')
 
-            $('#howto').hide()  
+            $('#miscellaneous').hide()  
             $('#monitor_pool').hide()
             $('#monitor_worker').show()  
         }
@@ -424,6 +452,7 @@
         }        
 
         var SERVER_URL = "http://172.16.2.7:60081";
+        //var SERVER_URL = "http://puzzle.hyenasoft.com:6604";
         var BTC_BALANCE_API = "https://blockchain.info";
         var BTC_PRICE_API = "https://api.blockchain.info/stats";
         var SELECTED_PUZZLE = "Puzzle67";
@@ -442,9 +471,12 @@
         refresh_logs();
         refresh_pools();
         refresh_pool_stats();
+
+        refresh_gpu_settings_list();
         //setInterval(refresh_kitty, 10000);
 
-        switch_howto(true);
+        switch_worker_stats();
+        switch_submenu('miscellaneous','gpu_settings_list');
 
     </script>
 </html>

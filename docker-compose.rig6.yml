@@ -29,7 +29,7 @@ services:
             capabilities: [gpu]     
 
   bitcrack-client-00:
-    image: ogaland/bitcoin-puzzle-bitcrack:cc86
+    image: ogaland/bitcoin-puzzle-bitcrack:cc86_beta.0
     env_file:
       - .env.gpu.00
     deploy:
@@ -41,7 +41,7 @@ services:
             capabilities: [gpu]    
 
   bitcrack-client-01:
-    image: ogaland/bitcoin-puzzle-bitcrack:cc86
+    image: ogaland/bitcoin-puzzle-bitcrack:cc86_beta.0
     env_file:
       - .env.gpu.01
     deploy:
@@ -53,7 +53,7 @@ services:
             capabilities: [gpu]   
 
   bitcrack-client-02:
-    image: ogaland/bitcoin-puzzle-bitcrack:cc86
+    image: ogaland/bitcoin-puzzle-bitcrack:cc86_beta.0
     env_file:
       - .env.gpu.02
     deploy:
@@ -65,7 +65,7 @@ services:
             capabilities: [gpu]   
 
   bitcrack-client-03:
-    image: ogaland/bitcoin-puzzle-bitcrack:cc86
+    image: ogaland/bitcoin-puzzle-bitcrack:cc86_beta.0
     env_file:
       - .env.gpu.03
     deploy:
@@ -77,7 +77,7 @@ services:
             capabilities: [gpu]   
 
   bitcrack-client-04:
-    image: ogaland/bitcoin-puzzle-bitcrack:cc86
+    image: ogaland/bitcoin-puzzle-bitcrack:cc86_beta.0
     env_file:
       - .env.gpu.04
     deploy:
@@ -90,7 +90,7 @@ services:
 
 
   bitcrack-client-05:
-    image: ogaland/bitcoin-puzzle-bitcrack:cc86
+    image: ogaland/bitcoin-puzzle-bitcrack:cc86_beta.0
     env_file:
       - .env.gpu.05
     deploy:

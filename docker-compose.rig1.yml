@@ -24,10 +24,10 @@ services:
             capabilities: [gpu]     
 
   bitcrack-client-00:
-    #image: ogaland/bitcoin-puzzle-bitcrack:cc86
-    image: bitcoin-puzzle-bitcrack:cc86
+    #image: ogaland/bitcoin-puzzle-bitcrack:cc86_beta.0
+    image: bitcoin-puzzle-bitcrack:cc86_beta.0
     env_file:
-      - .env.gpu.00
+      - .env.gpu.w.00
     deploy:
       resources:
         reservations:

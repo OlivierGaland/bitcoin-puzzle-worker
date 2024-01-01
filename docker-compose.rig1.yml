@@ -5,8 +5,6 @@ services:
   watchdog:
     build:
       context: ./Watchdog
-    depends_on:
-      - bitcrack-client-00
     env_file:
       - .env.watchdog.rig1
     privileged: true

@@ -21,23 +21,6 @@ def get_command_output(cmd,discard_lines = [0]):
         raise Exception(std_err) 
     return ret
 
-def set_containers_gpu_id(cnts,gpus):
-
-    LOG.info("set_containers_gpu_id")
-
-    for i in range(len(cnts.containers)):
-        if cnts.containers[i].state != "running":
-            cnts.containers[i].force_start()
-            time.sleep(10)
-
-        q = get_command_output('docker exec -it '+cnts.containers[i].id+' nvidia-smi --query-gpu=uuid --format=csv',[0])
-        if len(q) != 1: raise Exception("Invalid gpu count in container : "+str(cnts.containers[i].name)+" : "+str(len(q)))
-
-        for j in range(len(gpus.gpus)):
-            if gpus.gpus[j].uuid == q[0]:
-                cnts.containers[i].gpu_id = j
-                break
-
 class Singleton:
     __instance = None
 

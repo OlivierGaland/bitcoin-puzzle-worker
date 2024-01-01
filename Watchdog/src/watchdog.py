@@ -8,7 +8,7 @@ import http.server
 import socketserver
 
 from log import LOG
-from tool import Context,get_command_output,set_containers_gpu_id
+from tool import Context,get_command_output
 from gpu import GpuFactory
 from container import ContainerFactory
 
@@ -119,15 +119,12 @@ if __name__ == '__main__':
 
     try:
 
-        LOG.info("GPU count : "+str(gpu_count))
+        LOG.info("GPU count declared : "+str(gpu_count))
 
         webserver_thread = None
         Context.gpu_factory = GpuFactory(gpu_count)
-        Context.container_factory = ContainerFactory(gpu_count)
-
-        #exit(-1)
-
-        set_containers_gpu_id(Context.container_factory,Context.gpu_factory)
+        Context.container_factory = ContainerFactory()
+        Context.container_factory.refresh_allcontainers() # init containers list
 
         Context.gpu_factory.start_refresh_thread(10)
         Context.container_factory.start_refresh_thread(30)

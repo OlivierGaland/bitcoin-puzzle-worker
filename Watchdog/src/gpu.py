@@ -22,23 +22,24 @@ class Gpu():
         self.uuid = smi_line[4]
         self.device_id = smi_line[5]
         self.total_memory = float(smi_line[10].split(" ")[0])
+        self.compute_cap = smi_line[14]
         self.dead = False
-        self.history = dict()
+        #self.history = dict()
         self.set_state(time.time(),smi_line)
 
     def set_state(self,ts,smi_line):
         self.state = GpuState(ts,smi_line)
-        #self.history[ts] = self.state       #TODO : manage history
+        #self.history[ts] = self.state       #TODO : manage history (future dev)
 
     def update(self,smi_line):
-        if len(smi_line) == 14: 
+        if len(smi_line) == 15: 
             self.set_state(time.time(),smi_line)
         else:
             self.dead = True
 
     def to_html(self,idx,state):
         warnings,is_warnings = self.get_warnings()
-        ret = "<tr"+(" class='highlight'" if is_warnings else "")+"><td>"+str(idx)+"</td><td>"+str(self.name)+"</td><td>"+str(self.total_memory)+" MB</td><td>"+str(int(100*(self.total_memory-state.mem_left)/self.total_memory))+" %</td><td>"+ str(int(state.gpu_usage))+ \
+        ret = "<tr"+(" class='highlight'" if is_warnings else "")+"><td>"+str(idx)+"</td><td>"+str(self.name)+"</td><td>"+str(self.total_memory)+" MB</td><td>"+str(self.compute_cap)+"</td><td>"+str(int(100*(self.total_memory-state.mem_left)/self.total_memory))+" %</td><td>"+ str(int(state.gpu_usage))+ \
                     " %</td><td>"+str(int(state.temperature))+" C</td><td>"+str(int(state.fan_speed))+" %</td><td>"+str(int(state.mem_clock))+" Mhz</td><td>"+str(int(state.gpu_clock))+" Mhz</td><td>"+str(int(state.power_limit))+" W</td><td>"+str(state.power)+ \
                     " W</td><td>"+str(warnings)+"</td><tr>"
         return ret
@@ -47,11 +48,16 @@ class Gpu():
         ret = ""
         if self.dead: return "DEAD", True
         if self.state.temperature > 70: ret += "TEMP "
+        if self.state.gpu_usage < 90: ret += "GPU "
+        if self.state.mem_usage < 35: ret += "MEM "
         if (self.state.power_limit/self.state.power) > 1.5: ret += "PWR "
         if ret == "": ret = "OK"
         return ret, (ret != "OK")
 
 class GpuFactory():
+
+    STATE_QUERY_PARAMS = ' --query-gpu=temperature.gpu,power.draw,power.limit,name,uuid,pci.sub_device_id,clocks.mem,clocks.gr,fan.speed,persistence_mode,memory.total,memory.free,utilization.gpu,utilization.memory,compute_cap --format=csv'
+
     def __init__(self,count):
         self.count = count
         self.gpus = list()
@@ -63,13 +69,13 @@ class GpuFactory():
         if self.refresh_thread != None: self.refresh_thread.join()
 
     def init_gpus(self):
-        q = get_command_output('nvidia-smi --query-gpu=temperature.gpu,power.draw,power.limit,name,uuid,pci.sub_device_id,clocks.mem,clocks.gr,fan.speed,persistence_mode,memory.total,memory.free,utilization.gpu,utilization.memory --format=csv')
+        q = get_command_output('nvidia-smi'+GpuFactory.STATE_QUERY_PARAMS)
         if len(q) != self.count: raise Exception("Invalid gpu count in snapshot : "+str(self.count)+" != "+str(len(q)))
         for i in range(0,self.count): self.gpus.append(Gpu(q[i].split(", ")))
 
 
     def to_html(self):
-        ret = "<table id='gpus_tab' class='bordered'><tr class='header'><th>Gpu</th><th>Name</th><th>Memory</th><th>Mem load</th><th>Gpu load</th><th>Temp</th><th>Fan speed</th><th>Mem clock</th><th>Gpu clock</th><th>Pwr limit</th><th>Pwr usage</th><th></th></tr>"
+        ret = "<table id='gpus_tab' class='bordered'><tr class='header'><th>Gpu</th><th>Name</th><th>Memory</th><th>Compute cap</th><th>Mem load</th><th>Gpu load</th><th>Temp</th><th>Fan speed</th><th>Mem clock</th><th>Gpu clock</th><th>Pwr limit</th><th>Pwr usage</th><th></th></tr>"
         for i in range(self.count): ret += self.gpus[i].to_html(i,self.gpus[i].state)
         return ret+ "</table>"
 
@@ -86,12 +92,12 @@ class GpuFactory():
             if g.uuid == uuid: return g
 
     def refresh_allgpus(self):
-        q = get_command_output('nvidia-smi --query-gpu=temperature.gpu,power.draw,power.limit,name,uuid,pci.sub_device_id,clocks.mem,clocks.gr,fan.speed,persistence_mode,memory.total,memory.free,utilization.gpu,utilization.memory --format=csv')
+        q = get_command_output('nvidia-smi'+GpuFactory.STATE_QUERY_PARAMS)
 
         if len(q) != self.count:
             q = list()
             for i in range(self.count):
-                q.append(get_command_output('nvidia-smi -i '+str(i)+' --query-gpu=temperature.gpu,power.draw,power.limit,name,uuid,pci.sub_device_id,clocks.mem,clocks.gr,fan.speed,persistence_mode,memory.total,memory.free,utilization.gpu,utilization.memory --format=csv')[0])
+                q.append(get_command_output('nvidia-smi -i '+str(i)+GpuFactory.STATE_QUERY_PARAMS)[0])
 
         for i in range(len(q)):
             qs = q[i].split(", ")
@@ -100,6 +106,3 @@ class GpuFactory():
     def start_refresh_thread(self,interval):
         self.refresh_thread = threading.Thread(target = self.refresh)
         self.refresh_thread.start()
-
-        #webserver_thread = threading.Thread(target = WebserverThread)
-        #webserver_thread.start()

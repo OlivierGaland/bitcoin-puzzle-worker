@@ -91,7 +91,6 @@ Currently only Nvidia cards are supported, I will think about adding AMD cards s
         * the watchdog that will monitor stack health and provide a web browser graphical interface at http://localhost. It will check for faulty containers and restart them if possible for instance
         * the clients that will run the scanning software, each client is associated with one video card, so there will be as many clients as you have video cards on your rig.
     - watchdog setup :
-        * depends_on : you should add one line depends_on per client with the client service name
         * env_file : add your env.watchdog file name on this line
     - client setup :
         * service name should be somewhat standardized, keeping the current policy is advised, for instance bitcrack-client-00 for gpu 0 (note the 2 digits in the service name that allow a smooth sorting by name)
@@ -111,13 +110,13 @@ Currently only Nvidia cards are supported, I will think about adding AMD cards s
 
 4. Setting up .env.gpu files :  
     - There should be one .env.gpu file per gpu installed on your rig, please keep naming convention .env.gpu.xx where xx is a 2-digit number matching client service name
-    - Worker settings :
+    - Worker settings (mandatory) :
         - WORKER_START_DELAY : this will set a waiting time (in sec) before the client start, during my testing it seems if all clients are started in sync, nvidia drivers does not appreciate and may crash some containers, to prevent that use a different WORKER_START_DELAY for each .env.gpu file, a delay of 10 sec between each delay seems enough.
         - POOL_NAME : The pool name to work in.
         - WORKER_NAME : This should be a bitcoin address and will be checked on server side, note only legacies addresses are accepted (starting with 1 or 3). Be aware that it will be the proof that you had processed assigned range. Once the target key is broken, the rewards will be sent to this address. So be sure to not lose access to this wallet in any case.
         - SERVER_IP : should be set to  puzzle.hyenasoft.com
         - SERVER_PORT : should be set to  6603
-    - Video card settings :
+    - Video card settings (mandatory) :
         - For detailed infos on those settings please see the Understanding video card settings section.
         - GPU_BRAND : Set to Nvidia , currently only Nvidia card are supported.
         - GPU_NAME : Your card model, for example RTX3060Ti, it will allow to retrieve best settings from database.
@@ -127,7 +126,7 @@ Currently only Nvidia cards are supported, I will think about adding AMD cards s
         - BLOCKS_OVERRIDE : Optional, set scanner CUDA blocks (if not set use database default for your GPU_NAME).
         - THREADS_OVERRIDE : Optional, set scanner thread count per CUDA block (if not set use database default for your GPU_NAME).
         - POINTS_OVERRIDE : Optional, set scanner processed points count (if not set use database default for your GPU_NAME).
-    - Filter settings :
+    - Filter settings (optional) :
         - This section is optional and allow to discard blocks not matching a decent entropy. Aim is to try to select only range that are statistically more likely to be the solution of the puzzle with the hope of finding the solution faster. To disable all filters just remove the section. 
         - FILTER_BASE_DISPLAY : set to 1 to enable filtering on base display : this will discard range repeating to many times same char like for instance 0xAAAAA789 in base16 -too many repeated A-.
         - FILTER_BASE_DISPLAY_MIN : minimal base to check in the filter (from base2 to base36), value from 2 to 36.

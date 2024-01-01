@@ -1,5 +1,5 @@
 import json,time,threading
-from tool import get_command_output
+from tool import Context,get_command_output
 from log import LOG
 
 class Container():
@@ -56,45 +56,25 @@ class Container():
 
 class ContainerFactory():
 
-    def __init__(self,count):
-        self.count = count
+    def __init__(self):
         self.containers = list()
         self.refresh_thread = None
-
-        self.restart_containers = set()
-
-        r = get_command_output('docker container ls -a --filter name=bitcrack-client --format json',[])
-        if len(r) != self.count: raise Exception("Invalid container count in snapshot : "+str(self.count)+" != "+str(len(r)))
-
-        sdr = sorted([json.loads(x) for x in r], key=lambda d: d['Names'])
-        for i in range(0,self.count):
-
-            pool = None
-            worker = None
-            try:
-                for item in get_command_output("docker exec -it "+sdr[i]['Names']+" bash -c 'cat /proc/`ps -A | grep BitCrack | awk \"{ print \\\$1 }\"`/environ | tr \"\\000\" \"\\n\"'",[]):
-                    if item.startswith("POOL_NAME="): pool = item.split("=")[1]
-                    if item.startswith("WORKER_NAME="): worker = item.split("=")[1]
-            except Exception as e:
-                LOG.error("Exception : "+str(e))
- 
-            self.containers.append(Container(sdr[i],pool,worker))
 
     def __del__(self):
         if self.refresh_thread != None: self.refresh_thread.join()
 
     def to_html(self):
         ret = "<table id='containers_tab' class='bordered'><tr class='header'><th>Container</th><th>Gpu</th><th>Name</th><th>Id</th><th>Status</th><th>State</th><th>Restart</th><th>Pool</th><th>Worker</th><th></th></tr>"
-        for i in range(self.count): ret += self.containers[i].to_html(i)
+        for i in range(len(self.containers)): ret += self.containers[i].to_html(i)
         return ret+ "</table>"
     
     def logs_to_html(self):
         ret = "<table id='logs_tab' class='bordered'><tr class='header'><th>Container</th><th>Date</th><th>Block duration</th><th>Scan speed</th></tr>"
         logs = list()
 
-        nline = int(36/self.count)
+        nline = 0 if len(self.containers) == 0 else int(36/len(self.containers))
 
-        for i in range(self.count):
+        for i in range(len(self.containers)):
             for item in get_command_output("docker logs "+str(self.containers[i].name)+" | grep 'Scan done' | tail -"+str(nline),[]):
                 logs.append((i,item.split("INFO")[0].split(".")[0],item.split("elapsed time")[1].split(" speed is ")[0].split(".")[0],item.split("elapsed time")[1].split(" speed is ")[1]))
 
@@ -108,6 +88,7 @@ class ContainerFactory():
     def get_container_from_name(self,name):
         for c in self.containers:
             if c.name == name: return c
+        return None
 
     def refresh(self):
         threading.current_thread().name = "ContainersRefresh"
@@ -128,17 +109,33 @@ class ContainerFactory():
         r = get_command_output('docker container ls -a --filter name=bitcrack-client --format json',[])
         sdr = sorted([json.loads(x) for x in r], key=lambda d: d['Names'])
         for i in range(len(sdr)):
-
             pool = None
             worker = None
             try:
                 for item in get_command_output("docker exec -it "+sdr[i]['Names']+" bash -c 'cat /proc/`ps -A | grep BitCrack | awk \"{ print \\\$1 }\"`/environ | tr \"\\000\" \"\\n\"'",[]):
                     if item.startswith("POOL_NAME="): pool = item.split("=")[1]
                     if item.startswith("WORKER_NAME="): worker = item.split("=")[1]
+
+                cnt = self.get_container_from_name(sdr[i]['Names'])
+                if cnt is None:
+                    c = Container(sdr[i],pool,worker)
+
+                    q = get_command_output('docker exec -it '+c.id+' nvidia-smi --query-gpu=uuid --format=csv',[0])
+                    if len(q) != 1: raise Exception("Invalid gpu count in container : "+str(c.name)+" : "+str(len(q)))
+
+                    gpu_f = Context.gpu_factory
+                    c.gpu_id = None
+                    for j in range(len(gpu_f.gpus)):
+                        if gpu_f.gpus[j].uuid == q[0]:
+                            c.gpu_id = j
+                            break
+
+                    self.containers.append(c)
+                else:
+                    cnt.update(sdr[i],pool,worker)
+
             except Exception as e:
                 LOG.error("Exception : "+str(e))
- 
-            self.get_container_from_name(sdr[i]['Names']).update(sdr[i],pool,worker)
 
     def start_refresh_thread(self,interval):
         self.refresh_thread = threading.Thread(target = self.refresh)

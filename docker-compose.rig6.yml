@@ -2,6 +2,18 @@ version: '3.5'
 
 services:
 
+  benchmarker:
+    build:
+      context: ./Benchmarker
+      dockerfile: ./Dockerfile
+    privileged: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            capabilities: [gpu]  
+
   watchdog:
     build:
       context: ./Watchdog

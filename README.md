@@ -87,13 +87,14 @@ Currently only Nvidia cards are supported, I will think about adding AMD cards s
 
 1. Setting up docker-compose.yml :  
     - The repository contains 2 docker-compose.yml examples, one for my windows computer (1 GPU) et one for my linux computer (6 GPU), take some time to review the first one and build your own and name it docker-compose.yml
-    - There are 2 services type :
+    - There are 3 services inside :
+        * the benchmarker that can be ran as standalone service : It is here to allow a convenient way to test your gpus and see what settings are best to achieve a good hash rate, but also minimize power cunsumption. Once you have found good settings you can remove it from the stack (by stopping the container). When using it, all other containers of the stack should be stopped to not interfere with the benchmarking. It is command line and two scripts are provided : ./info.py to list your gpus and capabilities and set test parameters, and ./benchmark.py to do a simple benchmark and compare results to find best settings.
         * the watchdog that will monitor stack health and provide a web browser graphical interface at http://localhost. It will check for faulty containers and restart them if possible for instance
         * the clients that will run the scanning software, each client is associated with one video card, so there will be as many clients as you have video cards on your rig.
     - watchdog setup :
         * env_file : add your env.watchdog file name on this line
     - client setup :
-        * service name should be somewhat standardized, keeping the current policy is advised, for instance bitcrack-client-00 for gpu 0 (note the 2 digits in the service name that allow a smooth sorting by name)
+        * service name should be somewhat standardized, keeping the current policy is advised, for instance bitcrack-client-00 for gpu 0 (note the 2 digits in the service name that allow a smooth sorting by name)S
         * image : use image ogaland/bitcoin-puzzle-bitcrack:ccXX were XX is the compute capability of the associated gpu. You can find this information on [nvidia site](https://developer.nvidia.com/cuda-gpus), for instance a 3060Ti is compute capability 8.6, this means you should use in this case image ogaland/bitcoin-puzzle-bitcrack:cc86. All generated images are available at [dockerhub](https://hub.docker.com/repository/docker/ogaland/bitcoin-puzzle-bitcrack/general). If it does not exist you should drop a message to ask me to generate it.
         * env_file : it is also strongly advised to keep current name policy, for instance .env.gpu.00 for gpu associated with bitcrack-client-00
         * device_ids : there should be only one id, and for clarity use the number in the service name, for instance bitcrack-client-00 will be for device_ids ['0']

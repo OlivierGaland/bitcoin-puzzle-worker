@@ -28,6 +28,12 @@ if __name__ == '__main__':
     params += (" -t "+str(t)) if t is not None else ""
     params += (" -p "+str(p)) if p is not None else ""
 
+    q = get_command_output("nvidia-smi -i "+str(gid),[])
+    for item in q:
+        if item.find("cuBitCrack") != -1:
+            print("Cannot launch benchmark on device id : "+str(gid)+", it seems a cuBitCrack process is already running, check with nvidia-smi -i "+str(gid)+" , stop the bitcrack-client associated with this gpu")
+            exit(-1)
+
     os.system(BITCRACK_DIR+"/bin"+cc+"/cuBitCrack -c"+params+" --keyspace 1000000000:1fffffffff 14iXhn8bGajVWegZHJ18vJLHhntcpL4dex")  
     print("Run done on device id          :  "+str(gid))  
     print("CUDA blocks , threads , points :  "+(str(b) if b is not None else "default")+" , "+(str(t) if t is not None else "default")+" , "+(str(p) if p is not None else "default"))

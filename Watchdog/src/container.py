@@ -36,6 +36,24 @@ class Container():
         if ret == "": ret = "OK"
         return ret, failed
 
+
+
+    def set_gpu_id(self):
+        try:
+            q = get_command_output('docker exec -it '+self.id+' nvidia-smi --query-gpu=uuid --format=csv',[0])
+            if len(q) != 1: raise Exception("Invalid gpu count in container : "+str(self.name)+" : "+str(len(q)))
+
+            gpu_f = Context.gpu_factory
+            self.gpu_id = None
+            for j in range(len(gpu_f.gpus)):
+                if gpu_f.gpus[j].uuid == q[0]:
+                    self.gpu_id = j
+                    break
+
+        except Exception as e:
+            LOG.error("Exception : "+str(e))
+
+
     def force_start(self):
         now = time.time()
         if now - self.last_restart < 600:     # 10 minutes between 2 restarts is believe to be restarts in a row
@@ -53,6 +71,9 @@ class Container():
 
         o = get_command_output('docker start '+str(self.name),[])
         LOG.warning("Restarting container "+str(self.name)+" : "+str(o))
+
+
+
 
 class ContainerFactory():
 
@@ -108,31 +129,25 @@ class ContainerFactory():
     def refresh_allcontainers(self):
         r = get_command_output('docker container ls -a --filter name=bitcrack-client --format json',[])
         sdr = sorted([json.loads(x) for x in r], key=lambda d: d['Names'])
+
         for i in range(len(sdr)):
             pool = None
             worker = None
             try:
-                for item in get_command_output("docker exec -it "+sdr[i]['Names']+" bash -c 'cat /proc/`ps -A | grep BitCrack | awk \"{ print \\\$1 }\"`/environ | tr \"\\000\" \"\\n\"'",[]):
-                    if item.startswith("POOL_NAME="): pool = item.split("=")[1]
-                    if item.startswith("WORKER_NAME="): worker = item.split("=")[1]
-
                 cnt = self.get_container_from_name(sdr[i]['Names'])
                 if cnt is None:
-                    c = Container(sdr[i],pool,worker)
+                    cnt = Container(sdr[i],pool,worker)
+                    cnt.set_gpu_id()
+                    self.containers.append(cnt)
 
-                    q = get_command_output('docker exec -it '+c.id+' nvidia-smi --query-gpu=uuid --format=csv',[0])
-                    if len(q) != 1: raise Exception("Invalid gpu count in container : "+str(c.name)+" : "+str(len(q)))
+                try:
+                    for item in get_command_output("docker exec -it "+sdr[i]['Names']+" bash -c 'cat /proc/`ps -A | grep BitCrack | awk \"{ print \\\$1 }\"`/environ | tr \"\\000\" \"\\n\"'",[]):
+                        if item.startswith("POOL_NAME="): pool = item.split("=")[1]
+                        if item.startswith("WORKER_NAME="): worker = item.split("=")[1]
+                except Exception as e:
+                    LOG.error("Exception : "+str(e))
 
-                    gpu_f = Context.gpu_factory
-                    c.gpu_id = None
-                    for j in range(len(gpu_f.gpus)):
-                        if gpu_f.gpus[j].uuid == q[0]:
-                            c.gpu_id = j
-                            break
-
-                    self.containers.append(c)
-                else:
-                    cnt.update(sdr[i],pool,worker)
+                cnt.update(sdr[i],pool,worker)
 
             except Exception as e:
                 LOG.error("Exception : "+str(e))
@@ -140,5 +155,4 @@ class ContainerFactory():
     def start_refresh_thread(self,interval):
         self.refresh_thread = threading.Thread(target = self.refresh)
         self.refresh_thread.start()
-
 

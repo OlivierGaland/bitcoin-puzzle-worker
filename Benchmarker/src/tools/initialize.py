@@ -13,13 +13,13 @@ if __name__ == '__main__':
     s = ""
 
     for item in q:
+        cc = item.replace(".","")
 
         if os.path.exists(BITCRACK_DIR+"/bin"+cc):
             print("Already compiled for CC : "+cc)
             s+=cc+" "
             continue
 
-        cc = item.replace(".","")
         print("Compiling for CC : "+cc)
         sys.stdout.flush()
         os.system("(cd "+BITCRACK_DIR+" && make BUILD_CUDA=1 COMPUTE_CAP="+cc+")")

@@ -10,8 +10,15 @@ if __name__ == '__main__':
     sys.stdout.flush()
 
     l = ""
+    s = ""
 
     for item in q:
+
+        if os.path.exists(BITCRACK_DIR+"/bin"+cc):
+            print("Already compiled for CC : "+cc)
+            s+=cc+" "
+            continue
+
         cc = item.replace(".","")
         print("Compiling for CC : "+cc)
         sys.stdout.flush()
@@ -23,7 +30,7 @@ if __name__ == '__main__':
             print("Failed to compile for CC : "+cc)
         sys.stdout.flush()
 
-        print("Initialization done for following compute capability : "+l)
+        print("Initialization done for following compute capability : "+l+((" , skipped for "+s+" (target directory already exist)") if s != "" else ""))
         print("Open a shell and use benchmark.py script to do the benchmarking")
     while True:
         time.sleep(10)

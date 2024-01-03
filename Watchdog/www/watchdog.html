@@ -435,7 +435,7 @@
 
         function set_btc_balance(wallet) {
             $.ajax({
-                url: BTC_BALANCE_API+"/balance?active="+wallet,
+                url: BTC_BALANCE_API+"/balance?active="+wallet, //+"&cors=true",
                 dataType: 'json',
                 cache: false,
                 success: function(json) { $("#"+wallet).html(Math.round(1000*(json[wallet]["final_balance"]/100000000))/1000+" BTC"); }
@@ -453,7 +453,10 @@
 
         //var SERVER_URL = "http://172.16.2.7:60081";    local dev
         var SERVER_URL = "http://puzzle.hyenasoft.com:6604";
-        var BTC_BALANCE_API = "https://blockchain.info";
+        var BTC_BALANCE_API = "https://blockchain.info";                        //https://blockchain.info/multiaddr?active=$address|$address
+
+        //https://blockchain.info/multiaddr?n=0&active=1BY8GQbnueYofwSuFAT3USAhGjPrkxDdW9|1MVDYgVaSN6iKKEsbzRUAYFrYJadLYZvvZ
+
         var BTC_PRICE_API = "https://api.blockchain.info/stats";
         var SELECTED_PUZZLE = "Puzzle67";
         var POOL_SHARE = 0.1;

@@ -14,47 +14,37 @@ from container import ContainerFactory
 
 class WebserverRequestHandler(http.server.SimpleHTTPRequestHandler):
 
+    URL_MAPPING = {
+        "/" : "watchdog.html",
+        "/favicon.ico" : "favicon.ico",
+        "/www/style.css" : "style.css",
+        "/www/logo.png" : "logo.png",
+    }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, directory='/www')
 
     def log_request(self, code='-', size='-'):
         pass
 
-    def do_GET(self):
-
-        LOG.info("GET "+str(self.path))
-
-        if self.path.startswith("/gpus?"):
+    def url_lookup(self,url,fct):
+        if self.path.startswith(url):
             self.send_response(200)
             self.end_headers()
-            ret = Context.gpu_factory.to_html()
+            ret = fct()
             self.wfile.write(bytes(ret, "utf-8"))
-            return
+            return True
+        return False
 
-        if self.path.startswith("/containers?"):
-            self.send_response(200)
-            self.end_headers()
-            ret = Context.container_factory.to_html()
-            self.wfile.write(bytes(ret, "utf-8"))
-            return
+    def url_abs_lookup(self,url):
+        if self.path == url:
+            self.path = WebserverRequestHandler.URL_MAPPING[url]
+            return True
+        return False
 
-        if self.path.startswith("/logs?"):
-            self.send_response(200)
-            self.end_headers()
-            ret = Context.container_factory.logs_to_html()
-            self.wfile.write(bytes(ret, "utf-8"))
-            return
+    # def url_pic_lookup(self,url):
 
-        if self.path.startswith("/pools?"):
-            self.send_response(200)
-            self.end_headers()
-            ret = "TODO"
-            #ret = Context.container_factory.logs_to_html()
-            self.wfile.write(bytes(ret, "utf-8"))
-            return        
-
-        #https://stackoverflow.com/questions/28567733/how-to-encode-image-to-send-over-python-http-server
-        # if self.path.startswith("/logo?"):
+    #     if self.path.startswith("/logo?"):
         #     self.send_response(200)
         #     self.send_header("Content-type", "image/jpeg")
         #     self.end_headers()
@@ -69,14 +59,24 @@ class WebserverRequestHandler(http.server.SimpleHTTPRequestHandler):
         #     return 
 
 
-        if self.path.startswith("/www/style.css"):
-            self.path = 'style.css'
-        elif self.path.startswith("/www/logo.png"):
-            self.path = 'logo.png'
-        else:
-            self.path = 'watchdog.html'   # care of this (could end with infinite nested page if ajax queries name are not added)
 
-        return http.server.SimpleHTTPRequestHandler.do_GET(self)
+
+    def do_GET(self):
+        LOG.info("GET "+str(self.path))
+
+        if self.url_lookup("/gpus?",Context.gpu_factory.to_html): return
+        if self.url_lookup("/containers?",Context.container_factory.to_html): return
+        if self.url_lookup("/logs?",Context.container_factory.logs_to_html): return
+
+        if self.url_abs_lookup("/www/style.css"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
+        if self.url_abs_lookup("/www/style.css"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
+        if self.url_abs_lookup("/www/logo.png"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
+        if self.url_abs_lookup("/favicon.ico"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
+        if self.url_abs_lookup("/"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
+
+        self.send_response(500)
+        self.end_headers()
+        return
 
 
 
@@ -97,7 +97,6 @@ def WebserverThread():
 if __name__ == '__main__':
     LOG.start()
     LOG.info("Starting ...")
-    time.sleep(15)  # timer for workers containers to be up
 
     #os.environ["WORKER_GPU_COUNT"] = "6"
     #os.environ["GPU_MEM_CLOCK_00"] = "1200"

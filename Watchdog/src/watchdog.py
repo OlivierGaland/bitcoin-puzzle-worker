@@ -94,6 +94,26 @@ def WebserverThread():
     httpd.shutdown()       
 
 
+def hard_reset():
+    LOG.info("Closing all watchdog threads")
+    Context.gpu_factory.refresh_thread_to_kill = True
+    Context.container_factory.refresh_thread_to_kill = True
+    Context.gpu_factory.refresh_thread.join()
+    Context.container_factory.refresh_thread.join()
+    time.sleep(5)
+
+    LOG.info("Closing all containers")
+    for item in Context.container_factory.containers: item.force_stop()
+    time.sleep(10)
+
+    LOG.info("Syncing drives")
+    os.system("echo s | sudo tee /proc/sysrq-trigger")
+    time.sleep(5)
+    LOG.info("Reseting")
+    os.system("echo b | sudo tee /proc/sysrq-trigger")
+
+
+
 if __name__ == '__main__':
     LOG.start()
     LOG.info("Starting ...")
@@ -132,8 +152,19 @@ if __name__ == '__main__':
         webserver_thread.start()
 
 
+        previous_gpu_count = gpu_count
         while True:
-            time.sleep(5)
+
+            # Check if no gpu is down
+            q = get_command_output('nvidia-smi'+GpuFactory.STATE_QUERY_PARAMS)
+
+            if len(q) != Context.gpu_factory.count and previous_gpu_count != gpu_count:
+                LOG.fatal("Invalid gpu count, one may be down, applying hard reset : "+str(self.count)+" != "+str(len(q)))
+                hard_reset()
+                exit(-1)
+            previous_gpu_count = len(q)
+
+            time.sleep(60)
 
     except Exception as e:
         LOG.error(e)
@@ -144,4 +175,6 @@ if __name__ == '__main__':
 # Hung system :
 # https://linuxhandbook.com/frozen-linux-system/
 # https://www.kernel.org/doc/html/latest/admin-guide/sysrq.html
-
+# https://www.shellhacks.com/remote-hard-reset-linux-server-reboot-not-work/
+# echo s | sudo tee /proc/sysrq-trigger
+# echo b | sudo tee /proc/sysrq-trigger

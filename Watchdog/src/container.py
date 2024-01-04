@@ -72,14 +72,16 @@ class Container():
         o = get_command_output('docker start '+str(self.name),[])
         LOG.warning("Restarting container "+str(self.name)+" : "+str(o))
 
-
-
+    def force_stop(self):
+        o = get_command_output('docker stop '+str(self.name),[])
+        LOG.warning("Stopping container "+str(self.name)+" : "+str(o))
 
 class ContainerFactory():
 
     def __init__(self):
         self.containers = list()
         self.refresh_thread = None
+        self.refresh_thread_to_kill = False
 
     def __del__(self):
         if self.refresh_thread != None: self.refresh_thread.join()
@@ -114,7 +116,7 @@ class ContainerFactory():
     def refresh(self):
         threading.current_thread().name = "ContainersRefresh"
 
-        while True:
+        while not self.refresh_thread_to_kill:
             time.sleep(60)
             LOG.info("Refreshing")
             self.refresh_allcontainers()
@@ -139,6 +141,8 @@ class ContainerFactory():
                     cnt = Container(sdr[i],pool,worker)
                     cnt.set_gpu_id()
                     self.containers.append(cnt)
+                elif cnt.gpu_id is None:
+                    cnt.set_gpu_id()
 
                 try:
                     for item in get_command_output("docker exec -it "+sdr[i]['Names']+" bash -c 'cat /proc/`ps -A | grep BitCrack | awk \"{ print \\\$1 }\"`/environ | tr \"\\000\" \"\\n\"'",[]):

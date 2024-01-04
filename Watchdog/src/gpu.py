@@ -64,6 +64,7 @@ class GpuFactory():
         if get_command_output('nvidia-smi --query-gpu=count --format=csv')[0] != str(count): raise Exception("Invalid gpu count : "+str(count))
         self.init_gpus()
         self.refresh_thread = None
+        self.refresh_thread_to_kill = False
 
     def __del__(self):
         if self.refresh_thread != None: self.refresh_thread.join()
@@ -75,14 +76,14 @@ class GpuFactory():
 
 
     def to_html(self):
-        ret = "<table id='gpus_tab' class='bordered'><tr class='header'><th>Gpu</th><th>Name</th><th>Memory</th><th>Compute cap</th><th>Mem load</th><th>Gpu load</th><th>Temp</th><th>Fan speed</th><th>Mem clock</th><th>Gpu clock</th><th>Pwr limit</th><th>Pwr usage</th><th></th></tr>"
+        ret = "<table id='gpus_tab' class='bordered'><tr class='header'><th>Gpu</th><th>Name</th><th>Memory</th><th>CCap</th><th>Mem load</th><th>Gpu load</th><th>Temp</th><th>Fan speed</th><th>Mem clock</th><th>Gpu clock</th><th>Pwr limit</th><th>Pwr usage</th><th></th></tr>"
         for i in range(self.count): ret += self.gpus[i].to_html(i,self.gpus[i].state)
         return ret+ "</table>"
 
     def refresh(self):
         threading.current_thread().name = "GpusRefresh"
 
-        while True:
+        while not self.refresh_thread_to_kill:
             time.sleep(10)
             LOG.info("Refreshing")
             self.refresh_allgpus()
@@ -98,6 +99,9 @@ class GpuFactory():
             q = list()
             for i in range(self.count):
                 q.append(get_command_output('nvidia-smi -i '+str(i)+GpuFactory.STATE_QUERY_PARAMS)[0])
+
+            LOG.fatal("Invalid gpu count in snapshot (gpu down ?) : "+str(self.count)+" != "+str(len(q)))
+            #TODO : add hard reset
 
         for i in range(len(q)):
             qs = q[i].split(", ")

@@ -100,15 +100,15 @@ def hard_reset():
     Context.container_factory.refresh_thread_to_kill = True
     Context.gpu_factory.refresh_thread.join()
     Context.container_factory.refresh_thread.join()
-    time.sleep(5)
+    time.sleep(10)
 
     LOG.info("Closing all containers")
     for item in Context.container_factory.containers: item.force_stop()
-    time.sleep(10)
+    time.sleep(20)
 
     LOG.info("Syncing drives")
     os.system("echo s | sudo tee /proc/sysrq-trigger")
-    time.sleep(5)
+    time.sleep(10)
     LOG.info("Reseting")
     os.system("echo b | sudo tee /proc/sysrq-trigger")
 

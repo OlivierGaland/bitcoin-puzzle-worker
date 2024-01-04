@@ -1,5 +1,5 @@
 # Important notice
-This software is still under developpement and not yet fully functionnal, it should be usable in the comings weeks. Please come back to see when I will deploy it to users.
+This software is still under developpement but is now opened, a forum is available for support at https://bpc.forum.hyenasoft.com/
 
 # bitcoin-puzzle-worker
 Client side of bitcoin puzzle challenge :  

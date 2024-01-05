@@ -1,98 +1,11 @@
 #!/usr/bin/python3
-import time,subprocess,os
-import threading
-
-import base64
-
-import http.server
-import socketserver
+import time,os
 
 from log import LOG
 from tool import Context,get_command_output
 from gpu import GpuFactory
 from container import ContainerFactory
-
-class WebserverRequestHandler(http.server.SimpleHTTPRequestHandler):
-
-    URL_MAPPING = {
-        "/" : "watchdog.html",
-        "/favicon.ico" : "favicon.ico",
-        "/www/style.css" : "style.css",
-        "/www/logo.png" : "logo.png",
-    }
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs, directory='/www')
-
-    def log_request(self, code='-', size='-'):
-        pass
-
-    def url_lookup(self,url,fct):
-        if self.path.startswith(url):
-            self.send_response(200)
-            self.end_headers()
-            ret = fct()
-            self.wfile.write(bytes(ret, "utf-8"))
-            return True
-        return False
-
-    def url_abs_lookup(self,url):
-        if self.path == url:
-            self.path = WebserverRequestHandler.URL_MAPPING[url]
-            return True
-        return False
-
-    # def url_pic_lookup(self,url):
-
-    #     if self.path.startswith("/logo?"):
-        #     self.send_response(200)
-        #     self.send_header("Content-type", "image/jpeg")
-        #     self.end_headers()
-
-        #     ret = None
-        #     with open('./webserver/logo.png', 'rb') as file_handle:
-        #         ret = file_handle.read()
-
-        #     code = '<img src="data:image/jpeg;base64,'+base64.b64encode(ret).decode('utf-8')+'" />'
-
-        #     self.wfile.write(bytes(code, "utf-8"))
-        #     return 
-
-
-
-
-    def do_GET(self):
-        LOG.info("GET "+str(self.path))
-
-        if self.url_lookup("/gpus?",Context.gpu_factory.to_html): return
-        if self.url_lookup("/containers?",Context.container_factory.to_html): return
-        if self.url_lookup("/logs?",Context.container_factory.logs_to_html): return
-
-        if self.url_abs_lookup("/www/style.css"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
-        if self.url_abs_lookup("/www/style.css"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
-        if self.url_abs_lookup("/www/logo.png"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
-        if self.url_abs_lookup("/favicon.ico"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
-        if self.url_abs_lookup("/"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
-
-        self.send_response(500)
-        self.end_headers()
-        return
-
-
-
-def WebserverThread():
-    threading.current_thread().name = "Webserver"
-
-    Handler = WebserverRequestHandler
-
-    PORT = 80
-    with socketserver.TCPServer(("", PORT), Handler) as httpd:
-        LOG.info("serving at port "+str( PORT))
-        httpd.serve_forever() 
-
-    httpd.socket.close()
-    httpd.shutdown()       
-
+from webserver import WebserverFactory
 
 def hard_reset():
     LOG.info("Closing all watchdog threads")
@@ -100,6 +13,7 @@ def hard_reset():
     Context.container_factory.refresh_thread_to_kill = True
     Context.gpu_factory.refresh_thread.join()
     Context.container_factory.refresh_thread.join()
+    Context.webserver_factory.stop()
     time.sleep(10)
 
     LOG.info("Closing all containers")
@@ -140,17 +54,15 @@ if __name__ == '__main__':
 
         LOG.info("GPU count declared : "+str(gpu_count))
 
-        webserver_thread = None
         Context.gpu_factory = GpuFactory(gpu_count)
         Context.container_factory = ContainerFactory()
-        Context.container_factory.refresh_allcontainers() # init containers list
 
+        Context.container_factory.refresh_allcontainers() # init containers list
         Context.gpu_factory.start_refresh_thread(10)
         Context.container_factory.start_refresh_thread(30)
 
-        webserver_thread = threading.Thread(target = WebserverThread)
-        webserver_thread.start()
-
+        Context.webserver_factory = WebserverFactory()
+        Context.webserver_factory.start()
 
         previous_gpu_count = gpu_count
         while True:
@@ -159,7 +71,7 @@ if __name__ == '__main__':
             q = get_command_output('nvidia-smi'+GpuFactory.STATE_QUERY_PARAMS)
 
             if len(q) != Context.gpu_factory.count and previous_gpu_count != gpu_count:
-                LOG.fatal("Invalid gpu count, one may be down, applying hard reset : "+str(self.count)+" != "+str(len(q)))
+                LOG.fatal("Invalid gpu count, one may be down, applying hard reset : "+str(gpu_count)+" != "+str(len(q)))
                 hard_reset()
                 exit(-1)
             previous_gpu_count = len(q)
@@ -168,7 +80,6 @@ if __name__ == '__main__':
 
     except Exception as e:
         LOG.error(e)
-        if webserver_thread is not None: webserver_thread.join()
         exit(-1)
 
 

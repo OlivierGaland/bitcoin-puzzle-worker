@@ -10,7 +10,11 @@ def get_command_output(cmd,discard_lines = [0]):
                             shell=True,
                             universal_newlines=True)
 
-    std_out, std_err = proc.communicate()
+    try:
+        std_out, std_err = proc.communicate(timeout=5)
+    except subprocess.TimeoutExpired:
+        raise Exception("Timeout : "+str(cmd))
+
     i = 0
     if proc.returncode == 0:
         for line in std_out.splitlines():

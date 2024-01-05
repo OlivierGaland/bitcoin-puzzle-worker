@@ -42,13 +42,17 @@ if __name__ == '__main__':
     if gpu_count is None: raise Exception("env WORKER_GPU_COUNT is not set")
     gpu_count = int(gpu_count)
     os.system("nvidia-smi -pm 1")
+    #get_command_output("nvidia-smi -pm 1")
+
     for gpu in range(gpu_count):
         mem_clock = os.getenv("GPU_MEM_CLOCK_"+"{:02d}".format(gpu))
         power_limit = os.getenv("GPU_POWER_LIMIT_"+"{:02d}".format(gpu))    
         if mem_clock is not None:
             os.system("nvidia-smi -i "+str(gpu)+" -lmc="+str(mem_clock))
+            #get_command_output("nvidia-smi -i "+str(gpu)+" -lmc="+str(mem_clock))
         if power_limit is not None:
             os.system("nvidia-smi -i "+str(gpu)+" -pl "+str(power_limit))
+            #get_command_output("nvidia-smi -i "+str(gpu)+" -pl "+str(power_limit))
 
     try:
 
@@ -67,15 +71,16 @@ if __name__ == '__main__':
         previous_gpu_count = gpu_count
         while True:
 
-            # Check if no gpu is down
-            q = get_command_output('nvidia-smi'+GpuFactory.STATE_QUERY_PARAMS)
-
-            if len(q) != Context.gpu_factory.count and previous_gpu_count != gpu_count:
-                LOG.fatal("Invalid gpu count, one may be down, applying hard reset : "+str(gpu_count)+" != "+str(len(q)))
+            try:
+                q = get_command_output('nvidia-smi'+GpuFactory.STATE_QUERY_PARAMS)
+                if len(q) != Context.gpu_factory.count and previous_gpu_count != gpu_count:
+                    raise Exception("Invalid gpu count : "+str(gpu_count)+" != "+str(len(q)))
+            except Exception as e:
+                LOG.fatal("Exception : "+str(e)+" gpu may be unresponsive, applying hard reset")
                 hard_reset()
                 exit(-1)
-            previous_gpu_count = len(q)
 
+            previous_gpu_count = len(q)
             time.sleep(60)
 
     except Exception as e:

@@ -86,7 +86,10 @@ class GpuFactory():
         while not self.refresh_thread_to_kill:
             time.sleep(10)
             LOG.info("Refreshing")
-            self.refresh_allgpus()
+            try:
+                self.refresh_allgpus()
+            except Exception as e:
+                LOG.error("Exception : "+str(e))
 
     def get_gpu_from_id(self,uuid):
         for g in self.gpus:

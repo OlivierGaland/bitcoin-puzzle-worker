@@ -99,4 +99,4 @@ class WebserverFactory():
     def stop(self):
         LOG.info("Stopping Webserver")
         if self.webserver is not None: self.webserver.shutdown()
-        if self.webserver_thread is not None: webserver_thread.join()
+        if self.webserver_thread is not None: self.webserver_thread.join()

@@ -17,7 +17,11 @@ def hard_reset():
     time.sleep(10)
 
     LOG.info("Closing all containers")
-    for item in Context.container_factory.containers: item.force_stop()
+    for item in Context.container_factory.containers:
+        try:
+            item.force_stop()
+        except Exception as e:
+            LOG.error("Exception : "+str(e))
     time.sleep(20)
 
     LOG.info("Syncing drives")

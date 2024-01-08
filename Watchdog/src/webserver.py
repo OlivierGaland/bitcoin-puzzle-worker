@@ -74,11 +74,6 @@ class WebserverRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_response(500)
         self.end_headers()
         return
-    
-    def end_headers (self):
-        self.send_header('Access-Control-Allow-Origin', '*')
-        http.server.SimpleHTTPRequestHandler.end_headers(self)    
-
 
 def WebserverThread():
     threading.current_thread().name = "Webserver"

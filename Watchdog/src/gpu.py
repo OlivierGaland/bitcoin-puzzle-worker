@@ -1,5 +1,5 @@
-import time,threading
-from tool import get_command_output
+import time,threading,json,os
+from tool import Context,get_command_output
 from log import LOG
 
 class GpuState():
@@ -14,6 +14,7 @@ class GpuState():
         self.mem_left = float(smi_line[11].split(" ")[0])
         self.gpu_usage = float(smi_line[12].split(" ")[0])
         self.mem_usage = float(smi_line[13].split(" ")[0])
+ 
 
 class Gpu():
     def __init__(self,smi_line):
@@ -36,6 +37,28 @@ class Gpu():
             self.set_state(time.time(),smi_line)
         else:
             self.dead = True
+
+    def to_dict(self):
+        warnings,is_warnings = self.get_warnings()
+        ret = {
+            "name" : self.name,
+            "uuid" : self.uuid,
+            "device_id" : self.device_id,
+            "total_memory" : self.total_memory,
+            "compute_cap" : self.compute_cap,
+            "dead" : self.dead,
+            "warnings" : warnings,
+            "temperature" : self.state.temperature,
+            "power" : self.state.power,
+            "power_limit" : self.state.power_limit,
+            "mem_clock" : self.state.mem_clock,
+            "gpu_clock" : self.state.gpu_clock,
+            "fan_speed" : self.state.fan_speed,
+            "mem_left" : self.state.mem_left,
+            "gpu_usage" : self.state.gpu_usage,
+            "mem_usage" : self.state.mem_usage
+        }
+        return ret
 
     def to_html(self,idx,state):
         warnings,is_warnings = self.get_warnings()
@@ -74,6 +97,13 @@ class GpuFactory():
         if len(q) != self.count: raise Exception("Invalid gpu count in snapshot : "+str(self.count)+" != "+str(len(q)))
         for i in range(0,self.count): self.gpus.append(Gpu(q[i].split(", ")))
 
+
+    def to_json(self):
+        ret = dict()
+        ret["host"] = Context.host_name
+        ret["gpus"] = list()
+        for g in self.gpus: ret["gpus"].append(g.to_dict())
+        return json.dumps(ret)
 
     def to_html(self):
         ret = "<table id='gpus_tab' class='bordered'><tr class='header'><th>Gpu</th><th>Name</th><th>Memory</th><th>CCap</th><th>Mem load</th><th>Gpu load</th><th>Temp</th><th>Fan speed</th><th>Mem clock</th><th>Gpu clock</th><th>Pwr limit</th><th>Pwr usage</th><th></th></tr>"

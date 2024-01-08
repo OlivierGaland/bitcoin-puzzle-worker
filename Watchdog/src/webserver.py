@@ -60,6 +60,10 @@ class WebserverRequestHandler(http.server.SimpleHTTPRequestHandler):
         if self.url_lookup("/containers?",Context.container_factory.to_html): return
         if self.url_lookup("/logs?",Context.container_factory.logs_to_html): return
 
+        if self.url_lookup("/json/gpus?",Context.gpu_factory.to_json): return
+        if self.url_lookup("/json/containers?",Context.container_factory.to_json): return
+        if self.url_lookup("/json/logs?",Context.container_factory.logs_to_json): return
+
         if self.url_abs_lookup("/www/style.css"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
         if self.url_abs_lookup("/www/style.css"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
         if self.url_abs_lookup("/www/logo.png"): return http.server.SimpleHTTPRequestHandler.do_GET(self)

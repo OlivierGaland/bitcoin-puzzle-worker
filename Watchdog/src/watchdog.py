@@ -62,6 +62,8 @@ if __name__ == '__main__':
 
         LOG.info("GPU count declared : "+str(gpu_count))
 
+        Context.host_name = os.getenv("HOST_NAME",os.uname()[1])
+
         Context.gpu_factory = GpuFactory(gpu_count)
         Context.container_factory = ContainerFactory()
 

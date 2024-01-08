@@ -22,6 +22,7 @@ class WebserverRequestHandler(http.server.SimpleHTTPRequestHandler):
     def url_lookup(self,url,fct):
         if self.path.startswith(url):
             self.send_response(200)
+            self.send_header('Access-Control-Allow-Origin', '*')
             self.end_headers()
             ret = fct()
             self.wfile.write(bytes(ret, "utf-8"))
@@ -73,6 +74,10 @@ class WebserverRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_response(500)
         self.end_headers()
         return
+    
+    def end_headers (self):
+        self.send_header('Access-Control-Allow-Origin', '*')
+        http.server.SimpleHTTPRequestHandler.end_headers(self)    
 
 
 def WebserverThread():

@@ -147,7 +147,7 @@ Currently only Nvidia cards are supported, I will think about adding AMD cards s
 
 ![image](https://github.com/OlivierGaland/bitcoin-puzzle-worker/assets/26048157/98eb84f0-7978-4caf-8f3f-1b27caca04db)
 
-    Then you can access to watchdog UI at http://localhost to monitor your workers state  
+    Then you can access to watchdog UI at https://localhost:6613 to monitor your workers state  
 
 
 

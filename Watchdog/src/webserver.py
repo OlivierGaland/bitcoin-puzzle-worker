@@ -67,7 +67,6 @@ class WebserverRequestHandler(http.server.SimpleHTTPRequestHandler):
         if self.url_lookup("/json/logs?",Context.container_factory.logs_to_json): return
 
         if self.url_abs_lookup("/www/style.css"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
-        if self.url_abs_lookup("/www/style.css"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
         if self.url_abs_lookup("/www/logo.png"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
         if self.url_abs_lookup("/favicon.ico"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
         if self.url_abs_lookup("/"): return http.server.SimpleHTTPRequestHandler.do_GET(self)
@@ -75,6 +74,10 @@ class WebserverRequestHandler(http.server.SimpleHTTPRequestHandler):
         self.send_response(500)
         self.end_headers()
         return
+
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.end_headers()  
 
 def WebserverThread():
     threading.current_thread().name = "Webserver"

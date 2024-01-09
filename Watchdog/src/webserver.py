@@ -85,7 +85,7 @@ def WebserverThread():
         if os.path.exists('/app/ssl/key.pem'): os.remove('/app/ssl/key.pem')
         LOG.info("Generating SSL Certificate")
         try:
-            OpenSslCommand = 'openssl req -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes -out /app/ssl/cert.pem -keyout /app/ssl/key.pem -subj "/C=IN/ST=Maharashtra/L=Satara/O=Wannabees/OU=KahiHiHa Department/CN=www.iamselfdepartment.com"'
+            OpenSslCommand = 'openssl req -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes -out /app/ssl/cert.pem -keyout /app/ssl/key.pem -subj "/C=IN/ST=Maharashtra/L=Satara/O=Self signed certifcate/OU='+os.uname()[1]+'/CN=www.hyenasoft.com"'
             os.system(OpenSslCommand)
             LOG.info('<<<<Certificate Generated>>>>>>')
         except:

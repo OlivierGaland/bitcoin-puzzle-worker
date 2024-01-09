@@ -1,5 +1,5 @@
 # Important notice
-This software is still under developpement but is now opened, a forum is available for support at https://bpc.forum.hyenasoft.com/
+This software is still under developpement but is now opened, a forum is available for support at https://bpc.forum.hyenasoft.com/ and main site is at https://bpc.hyenasoft.com/
 
 # bitcoin-puzzle-worker
 Client side of bitcoin puzzle challenge :  
@@ -101,7 +101,7 @@ Currently only Nvidia cards are supported, I will think about adding AMD cards s
 
 
 2. Setting up .env file :  
-    - WATCHDOG_EXPOSED_PORT : you can change it if you want to use another port to access the Watchdog UI on your browser (80 is default)
+    - WATCHDOG_EXPOSED_PORT : you can change it if you want to use another port to access the Watchdog UI on your browser (6613 is default)
 
 3. Setting up .env.watchdog :  
     - There are two .env.watchdog examples in the repository, one for my windows computer (1 GPU) et one for my linux computer (6 GPU), take some time to see what are inside. 

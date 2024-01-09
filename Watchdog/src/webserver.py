@@ -1,5 +1,6 @@
-import http.server,threading
+import http.server,threading,os
 import socketserver
+import ssl
 #import base64
 from tool import Context
 from log import LOG
@@ -78,12 +79,31 @@ class WebserverRequestHandler(http.server.SimpleHTTPRequestHandler):
 def WebserverThread():
     threading.current_thread().name = "Webserver"
 
+    if not os.path.exists('/app/ssl'): os.mkdir('/app/ssl')
+    if not os.path.exists('/app/ssl/cert.pem') or not os.path.exists('/app/ssl/key.pem'):
+        if os.path.exists('/app/ssl/cert.pem'): os.remove('/app/ssl/cert.pem')
+        if os.path.exists('/app/ssl/key.pem'): os.remove('/app/ssl/key.pem')
+        LOG.info("Generating SSL Certificate")
+        try:
+            OpenSslCommand = 'openssl req -newkey rsa:4096 -x509 -sha256 -days 3650 -nodes -out /app/ssl/cert.pem -keyout /app/ssl/key.pem -subj "/C=IN/ST=Maharashtra/L=Satara/O=Wannabees/OU=KahiHiHa Department/CN=www.iamselfdepartment.com"'
+            os.system(OpenSslCommand)
+            LOG.info('<<<<Certificate Generated>>>>>>')
+        except:
+            LOG.error('error while generating certificate')
+    else:
+        LOG.info("SSL Certificate already exists")
+
     Handler = WebserverRequestHandler
-    PORT = 80
+    PORT = 443
 
-    Context.webserver_factory.webserver = socketserver.TCPServer(("", PORT), Handler)
+    Context.webserver_factory.webserver = http.server.HTTPServer(("", PORT), Handler)
+    Context.webserver_factory.webserver.socket = ssl.wrap_socket(Context.webserver_factory.webserver.socket,
+                                server_side=True,
+                                certfile = "/app/ssl/cert.pem",
+                                keyfile = "/app/ssl/key.pem",
+                                ssl_version=ssl.PROTOCOL_TLSv1_2)
 
-    LOG.info("serving at port "+str( PORT))
+    LOG.info("serving at port "+str(PORT))
     Context.webserver_factory.webserver.serve_forever() 
 
 class WebserverFactory():

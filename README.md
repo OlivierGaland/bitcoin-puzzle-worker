@@ -1,5 +1,5 @@
 # Important notice
-This software is still under developpement but is now opened, a forum is available for support at https://bpc.forum.hyenasoft.com/ and main site is at https://bpc.hyenasoft.com/
+This software is still under developpement but is now opened, a forum is available for support at [bpc.forum.hyenasoft.com](https://bpc.forum.hyenasoft.com/) and main site is at [bpc.hyenasoft.com](https://bpc.hyenasoft.com/)
 
 # bitcoin-puzzle-worker
 Client side of bitcoin puzzle challenge :  
@@ -24,6 +24,8 @@ Currently only Nvidia cards are supported, I will think about adding AMD cards s
     * The software is currently still under developpement and may be improved, so it is not bug-free. I'm testing it at home with my personal computer (1x3060Ti + windows) and on my mining rig (6x3060Ti + linux)  
 
 ## Table of contents
+
+Important : for the latest install guide, please go on the forum : [bpc.forum.hyenasoft.com](https://bpc.forum.hyenasoft.com/)
 
 1. [Installation](#installation)
 2. [Setup](#setup)

@@ -1,5 +1,6 @@
 # Important notice
-This software is still under developpement but is now opened, a forum is available for support at [bpc.forum.hyenasoft.com](https://bpc.forum.hyenasoft.com/) and main site is at [bpc.hyenasoft.com](https://bpc.hyenasoft.com/)
+This software is still under developpement but is now opened, a forum is available for support at [bpc.forum.hyenasoft.com](https://bpc.forum.hyenasoft.com/) and main site is at [bpc.hyenasoft.com](https://bpc.hyenasoft.com/)  
+The install guide below may be not up to date, prefer checking the forum for detailled procedure to install and manage your pool client.
 
 # bitcoin-puzzle-worker
 Client side of bitcoin puzzle challenge :  

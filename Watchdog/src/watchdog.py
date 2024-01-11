@@ -25,10 +25,10 @@ def hard_reset():
     time.sleep(20)
 
     LOG.info("Syncing drives")
-    os.system("echo s | sudo tee /proc/sysrq-trigger")
+    os.system("echo s | tee /proc/sysrq-trigger")
     time.sleep(10)
     LOG.info("Reseting")
-    os.system("echo b | sudo tee /proc/sysrq-trigger")
+    os.system("echo b | tee /proc/sysrq-trigger")
 
 
 

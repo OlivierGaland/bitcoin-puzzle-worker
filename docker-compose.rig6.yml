@@ -23,6 +23,7 @@ services:
     tty: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - watchdog_cert:/app/ssl
     ports:
       - "${WATCHDOG_EXPOSED_PORT}:443"
     restart: always
@@ -114,4 +115,6 @@ networks:
       config:
         - subnet: 172.16.173.0/24
 
+volumes:
+  watchdog_cert:
 

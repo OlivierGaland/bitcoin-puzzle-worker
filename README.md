@@ -1,5 +1,6 @@
 # Important notice
-This software is still under developpement but is now opened, a forum is available for support at https://bpc.forum.hyenasoft.com/
+This software is still under developpement but is now opened, a forum is available for support at [bpc.forum.hyenasoft.com](https://bpc.forum.hyenasoft.com/) and main site is at [bpc.hyenasoft.com](https://bpc.hyenasoft.com/)  
+The install guide below may be not up to date, prefer checking the forum for detailled procedure to install and manage your pool client.
 
 # bitcoin-puzzle-worker
 Client side of bitcoin puzzle challenge :  
@@ -24,6 +25,8 @@ Currently only Nvidia cards are supported, I will think about adding AMD cards s
     * The software is currently still under developpement and may be improved, so it is not bug-free. I'm testing it at home with my personal computer (1x3060Ti + windows) and on my mining rig (6x3060Ti + linux)  
 
 ## Table of contents
+
+Important : for the latest install guide, please go on the forum : [bpc.forum.hyenasoft.com](https://bpc.forum.hyenasoft.com/)
 
 1. [Installation](#installation)
 2. [Setup](#setup)
@@ -101,7 +104,7 @@ Currently only Nvidia cards are supported, I will think about adding AMD cards s
 
 
 2. Setting up .env file :  
-    - WATCHDOG_EXPOSED_PORT : you can change it if you want to use another port to access the Watchdog UI on your browser (80 is default)
+    - WATCHDOG_EXPOSED_PORT : you can change it if you want to use another port to access the Watchdog UI on your browser (6613 is default)
 
 3. Setting up .env.watchdog :  
     - There are two .env.watchdog examples in the repository, one for my windows computer (1 GPU) et one for my linux computer (6 GPU), take some time to see what are inside. 
@@ -147,7 +150,7 @@ Currently only Nvidia cards are supported, I will think about adding AMD cards s
 
 ![image](https://github.com/OlivierGaland/bitcoin-puzzle-worker/assets/26048157/98eb84f0-7978-4caf-8f3f-1b27caca04db)
 
-    Then you can access to watchdog UI at http://localhost to monitor your workers state  
+    Then you can access to watchdog UI at https://localhost:6613 to monitor your workers state  
 
 
 

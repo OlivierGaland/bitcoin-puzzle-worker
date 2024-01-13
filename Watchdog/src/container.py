@@ -160,17 +160,24 @@ class ContainerFactory():
         while not self.refresh_thread_to_kill:
             time.sleep(60)
             LOG.info("Refreshing")
-            self.refresh_allcontainers()
+            success = self.refresh_allcontainers()
 
-            for item in self.containers:
-                if item.get_warnings()[1] == True:
-                    item.force_start()      # TODO add item in the queue
-                    time.sleep(5)           # for the moment take 5 sec delay between restarts (it seems if many workers are started at same time nvidia drivers may hang)
-
-            #TODO : restart one container at a time
+            if success:
+                for item in self.containers:
+                    if item.get_warnings()[1] == True:
+                        item.force_start()      # TODO add item in the queue
+                        time.sleep(5)           # for the moment take 5 sec delay between restarts (it seems if many workers are started at same time nvidia drivers may hang)
+                        #TODO : bee sure to restart one container at a time
+            else:
+                LOG.error("Cannot refresh containers")  #TODO : is this a temporary error from docker daemon (lets retry later) ? or do we need to restart all containers ?
 
     def refresh_allcontainers(self):
-        r = get_command_output('docker container ls -a --filter name=bitcrack-client --format json',[])
+        try:
+            r = get_command_output('docker container ls -a --filter name=bitcrack-client --format json',[])
+        except Exception as e:
+            LOG.error("Exception while running docker container ls : "+str(e))
+            return False
+
         sdr = sorted([json.loads(x) for x in r], key=lambda d: d['Names'])
 
         for i in range(len(sdr)):
@@ -196,6 +203,7 @@ class ContainerFactory():
 
             except Exception as e:
                 LOG.error("Exception : "+str(e))
+        return True
 
     def start_refresh_thread(self,interval):
         self.refresh_thread = threading.Thread(target = self.refresh)

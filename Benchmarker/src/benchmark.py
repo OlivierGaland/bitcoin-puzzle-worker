@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import argparse,os,sys
-from tools.tool import BITCRACK_DIR,get_command_output
+from tools.tool import BITCRACK_EXE_DIR,get_command_output
 
 
 if __name__ == '__main__':
@@ -35,7 +35,7 @@ if __name__ == '__main__':
         print("Cannot launch benchmark on device id : "+str(gid)+", it seems the GPU is not idle, stop any process/container currently using this gpu")
         exit(-1)
 
-    os.system(BITCRACK_DIR+"/bin"+cc+"/cuBitCrack -c"+params+" --keyspace 1000000000:1fffffffff 14iXhn8bGajVWegZHJ18vJLHhntcpL4dex")  
+    os.system(BITCRACK_EXE_DIR+"/bin"+cc+"/cuBitCrack -c"+params+" --keyspace 1000000000:1fffffffff 14iXhn8bGajVWegZHJ18vJLHhntcpL4dex")  
     print("Run done on device id          :  "+str(gid))  
     print("CUDA blocks , threads , points :  "+(str(b) if b is not None else "default")+" , "+(str(t) if t is not None else "default")+" , "+(str(p) if p is not None else "default"))
     q = get_command_output("nvidia-smi -i "+str(gid)+" --query-gpu=clocks.mem,power.limit --format=csv")   

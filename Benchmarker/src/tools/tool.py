@@ -1,6 +1,7 @@
 import subprocess
 
 BITCRACK_DIR = '/app/BitCrack'
+BITCRACK_EXE_DIR = '/app/exe'
 
 def get_command_output(cmd,discard_lines = [0]):
     ret = list()

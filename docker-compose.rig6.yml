@@ -7,6 +7,8 @@ services:
       context: ./Benchmarker
       dockerfile: ./Dockerfile
     privileged: true
+    volumes:
+      - benchmark_exe:/app/exe
     deploy:
       resources:
         reservations:
@@ -117,4 +119,5 @@ networks:
 
 volumes:
   watchdog_cert:
-
+  benchmark_exe:
+  

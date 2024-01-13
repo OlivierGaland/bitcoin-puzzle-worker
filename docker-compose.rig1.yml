@@ -7,6 +7,8 @@ services:
       context: ./Benchmarker
       dockerfile: ./Dockerfile
     privileged: true
+    volumes:
+      - benchmark_exe:/app/exe
     deploy:
       resources:
         reservations:
@@ -35,8 +37,7 @@ services:
             capabilities: [gpu]     
 
   bitcrack-client-00:
-    #image: ogaland/bitcoin-puzzle-bitcrack:cc86_beta.0
-    image: bitcoin-puzzle-bitcrack:cc86_beta.0
+    image: ogaland/bitcoin-puzzle-bitcrack:cc89_beta.0
     env_file:
       - .env.gpu.w.00
     deploy:
@@ -57,3 +58,4 @@ networks:
 
 volumes:
   watchdog_cert:
+  benchmark_exe:

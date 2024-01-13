@@ -1,6 +1,6 @@
 import time,sys,os
 
-from tool import get_command_output,BITCRACK_DIR
+from tool import get_command_output,BITCRACK_DIR,BITCRACK_EXE_DIR
 
 if __name__ == '__main__':
     print("Starting initialization ...")
@@ -15,7 +15,7 @@ if __name__ == '__main__':
     for item in q:
         cc = item.replace(".","")
 
-        if os.path.exists(BITCRACK_DIR+"/bin"+cc):
+        if os.path.exists(BITCRACK_EXE_DIR+"/bin"+cc):
             print("Already compiled for CC : "+cc)
             s+=cc+" "
             continue
@@ -24,7 +24,7 @@ if __name__ == '__main__':
         sys.stdout.flush()
         os.system("(cd "+BITCRACK_DIR+" && make BUILD_CUDA=1 COMPUTE_CAP="+cc+")")
         if os.path.exists(BITCRACK_DIR+"/bin"):
-            os.system("mv "+BITCRACK_DIR+"/bin "+BITCRACK_DIR+"/bin"+cc)
+            os.system("mv "+BITCRACK_DIR+"/bin "+BITCRACK_EXE_DIR+"/bin"+cc)
             l+=cc+" "
         else:
             print("Failed to compile for CC : "+cc)

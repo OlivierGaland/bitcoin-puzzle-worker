@@ -1,0 +1,51 @@
+version: '3.5'
+
+services:
+
+  benchmarker:
+    build:
+      context: ./Benchmarker
+      dockerfile: ./Dockerfile
+    privileged: true
+    volumes:
+      - benchmark_exe:/app/exe
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            capabilities: [gpu]  
+
+  watchdog:
+    build:
+      context: ./Watchdog
+    env_file:
+      - .env.watchdog
+    privileged: true
+    tty: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - watchdog_cert:/app/ssl
+    ports:
+      - "${WATCHDOG_EXPOSED_PORT}:443"     
+    restart: always
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            capabilities: [gpu]     
+
+#___GPUS_SECTION___   
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.173.0/24
+
+volumes:
+  watchdog_cert:
+  benchmark_exe:

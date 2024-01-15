@@ -1,4 +1,4 @@
 test.*
 __pycache__
-docker-compose.yml
+docker-compose.dev.yml
 Watchdog/Dockerfile.dev

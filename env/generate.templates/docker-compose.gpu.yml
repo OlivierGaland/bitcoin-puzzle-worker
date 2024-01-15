@@ -1,0 +1,11 @@
+  bitcrack-client-___GPU_ID2___:
+    image: ogaland/bitcoin-puzzle-bitcrack:___TAG___
+    env_file:
+      - .env.gpu.___GPU_ID2___
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ['___GPU_ID___']
+            capabilities: [gpu]    

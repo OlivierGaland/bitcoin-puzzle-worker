@@ -14,6 +14,7 @@ WORKDIR /www
 COPY ./www .
 
 WORKDIR /app
+RUN mkdir ssl
 COPY ./src .
 
 ENTRYPOINT ["python3", "watchdog.py"]

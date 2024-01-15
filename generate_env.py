@@ -79,19 +79,21 @@ if __name__ == '__main__':
     for i in range(len(gpus_info)):
         env_name = ".env.gpu."+"{:02d}".format(i)
         print("Generating gpu "+"{:02d}".format(i)+"   -> "+env_name)
+
+        report.append(env_name+" : ___BITCOIN_LEGACY_WALLET___ is not set")
         gpu_replace = dict()
         gpu_uncomment = list()
         gpu_replace["___DELAY___"] = str(10*i)
 
         found_in_db = False
         for item in db_gpu_settings:
-            if item["model"] == gpus_info[i]["name"]+'/':
+            if item["model"] == gpus_info[i]["name"]:
                 found_in_db = True
                 break
 
         if not found_in_db:
+            report.append(env_name+" : ___GPU_MODEL___ is not set")
             report.append(env_name+" : GPU model "+gpus_info[i]["name"]+" not found in DB")
-            report.append(env_name+" : Using default values for ___BIT_OVERRIDE___, ___BLOCKS_OVERRIDE___, ___THREADS_OVERRIDE___, ___POINTS_OVERRIDE___")
             report.append(".env.watchdog : Not defining GPU_MEM_CLOCK_{:02d} and GPU_POWER_LIMIT_{:02d}".format(i,i))
             gpu_replace["___BIT_OVERRIDE___"] = str(40)
             gpu_uncomment.append("BIT_OVERRIDE")

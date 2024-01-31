@@ -1,4 +1,4 @@
-import subprocess,time
+import subprocess,time,os
 
 from log import LOG
 
@@ -34,3 +34,28 @@ class Singleton:
         return cls.__instance
 
 class Context(Singleton): pass
+
+
+def hard_reset():
+    LOG.info("Closing all watchdog threads")
+    Context.gpu_factory.refresh_thread_to_kill = True
+    Context.container_factory.refresh_thread_to_kill = True
+    Context.gpu_factory.refresh_thread.join()
+    Context.container_factory.refresh_thread.join()
+    Context.webserver_factory.stop()
+    time.sleep(10)
+
+    LOG.info("Closing all containers")
+    for item in Context.container_factory.containers:
+        try:
+            item.force_stop()
+        except Exception as e:
+            LOG.error("Exception : "+str(e))
+    time.sleep(20)
+
+    LOG.info("Syncing drives")
+    os.system("echo s | tee /proc/sysrq-trigger")
+    time.sleep(10)
+    LOG.info("Reseting")
+    os.system("echo b | tee /proc/sysrq-trigger")
+

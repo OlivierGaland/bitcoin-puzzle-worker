@@ -1,4 +1,8 @@
 test.*
 __pycache__
 docker-compose.dev.yml
+docker-compose.yml
 Watchdog/Dockerfile.dev
+.env.Watchdog
+.env.gpu.0*
+.env

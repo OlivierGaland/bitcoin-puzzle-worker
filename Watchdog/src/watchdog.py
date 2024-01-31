@@ -2,39 +2,15 @@
 import time,os
 
 from log import LOG
-from tool import Context,get_command_output
+from tool import Context,get_command_output,hard_reset
 from gpu import GpuFactory
 from container import ContainerFactory
 from webserver import WebserverFactory
 
-def hard_reset():
-    LOG.info("Closing all watchdog threads")
-    Context.gpu_factory.refresh_thread_to_kill = True
-    Context.container_factory.refresh_thread_to_kill = True
-    Context.gpu_factory.refresh_thread.join()
-    Context.container_factory.refresh_thread.join()
-    Context.webserver_factory.stop()
-    time.sleep(10)
-
-    LOG.info("Closing all containers")
-    for item in Context.container_factory.containers:
-        try:
-            item.force_stop()
-        except Exception as e:
-            LOG.error("Exception : "+str(e))
-    time.sleep(20)
-
-    LOG.info("Syncing drives")
-    os.system("echo s | tee /proc/sysrq-trigger")
-    time.sleep(10)
-    LOG.info("Reseting")
-    os.system("echo b | tee /proc/sysrq-trigger")
-
-
-
 if __name__ == '__main__':
     LOG.start()
     LOG.info("Starting ...")
+    time.sleep(30)   # let the stack start up when the watchdog starts
 
     #os.environ["WORKER_GPU_COUNT"] = "6"
     #os.environ["GPU_MEM_CLOCK_00"] = "1200"

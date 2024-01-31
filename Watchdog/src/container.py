@@ -1,5 +1,5 @@
 import json,time,threading,os
-from tool import Context,get_command_output
+from tool import Context,get_command_output,hard_reset
 from log import LOG
 
 class Container():
@@ -72,9 +72,10 @@ class Container():
         if now - self.last_restart < 600:     # 10 minutes between 2 restarts is believe to be restarts in a row
             self.restart+=1
 
-            if self.restart > 5:   # to many restarts in a row : need to reset GPU
+            if self.restart > 8:   # to many restarts in a row : need to reset rig
                 LOG.error("Too many restarts for container "+str(self.name))
-                #TODO
+                hard_reset()
+                exit(-1)
 
         else:
             self.restart=1
@@ -160,16 +161,20 @@ class ContainerFactory():
         while not self.refresh_thread_to_kill:
             time.sleep(60)
             LOG.info("Refreshing")
-            success = self.refresh_allcontainers()
 
-            if success:
-                for item in self.containers:
-                    if item.get_warnings()[1] == True:
-                        item.force_start()      # TODO add item in the queue
-                        time.sleep(5)           # for the moment take 5 sec delay between restarts (it seems if many workers are started at same time nvidia drivers may hang)
-                        #TODO : bee sure to restart one container at a time
-            else:
-                LOG.error("Cannot refresh containers")  #TODO : is this a temporary error from docker daemon (lets retry later) ? or do we need to restart all containers ?
+            try:
+                success = self.refresh_allcontainers()
+                if success:
+                    for item in self.containers:
+                        if item.get_warnings()[1] == True:
+                            item.force_start()      # TODO add item in the queue
+                            time.sleep(5)           # for the moment take 5 sec delay between restarts (it seems if many workers are started at same time nvidia drivers may hang)
+                            #TODO : bee sure to restart one container at a time
+                else:
+                    LOG.error("Cannot refresh containers")  #TODO : is this a temporary error from docker daemon (lets retry later) ? or do we need to restart all containers ?
+
+            except Exception as e:
+                LOG.error("Exception : "+str(e))
 
     def refresh_allcontainers(self):
         try:

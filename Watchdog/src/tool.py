@@ -22,7 +22,7 @@ def get_command_output(cmd,discard_lines = [0]):
                 ret.append(line)
             i+=1
     else:
-        raise Exception(std_err) 
+        raise Exception("Error executing : "+str(cmd)+" / "+str(proc.returncode)+" / "+str(std_out)+" / "+str(std_err)) 
     return ret
 
 class Singleton:
